@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Таймер до 1 ноября</title>
+  <meta name="description" content="Адаптивный таймер обратного отсчёта до 1 ноября. Чистый HTML/CSS/JS, без библиотек." />
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121738;
+      --muted: #a7b0d6;
+      --text: #ecf0ff;
+      --shadow: 0 20px 60px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.04);
+      --radius: 22px;
+      --accent: linear-gradient(135deg, #7c3aed, #06b6d4);
+    }
+
+    * { box-sizing: border-box }
+    html, body { height: 100% }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 10% 10%, #111638 0%, #0b1020 45%, #090d19 100%);
+      display: grid;
+      place-items: center;
+      padding: 32px 16px;
+    }
+
+    .wrap {
+      width: min(1080px, 100%);
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      backdrop-filter: saturate(120%) blur(6px);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 3.8vw, 36px);
+    }
+
+    .title {
+      margin: 0 0 8px;
+      font-size: clamp(22px, 4vw, 40px);
+      line-height: 1.15;
+      letter-spacing: .2px;
+      font-weight: 800;
+      background: var(--accent);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: clamp(14px, 1.8vw, 16px);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: clamp(10px, 2.5vw, 18px);
+    }
+
+    .unit {
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: calc(var(--radius) - 6px);
+      padding: clamp(14px, 2.4vw, 22px);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .unit::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(600px 200px at -10% -10%, rgba(124,58,237,.25), transparent 60%),
+                  radial-gradient(600px 200px at 110% 110%, rgba(6,182,212,.25), transparent 60%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .value {
+      font-variant-numeric: tabular-nums;
+      font-size: clamp(42px, 8.2vw, 72px);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .5px;
+      margin: 0 0 10px;
+      background: var(--accent);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 6px 26px rgba(124,58,237,.25);
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: clamp(12px, 1.6vw, 14px);
+      letter-spacing: .35px;
+      text-transform: lowercase;
+    }
+
+    .hint {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 13px;
+      opacity: .85;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0);
+      white-space: nowrap; border: 0;
+    }
+
+    @media (max-width: 600px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card" aria-labelledby="timer-title">
+      <h1 id="timer-title" class="title">Обратный отсчёт до 1&nbsp;ноября</h1>
+      <p class="subtitle" id="timer-sub">Считаем до полуночи 1 ноября ближайшего года (локальное время устройства).</p>
+
+      <!--
+        Хотите жёстко зафиксировать год/дату? 
+        Раскомментируйте data-атрибут ниже и укажите ISO-дату: YYYY-MM-DDTHH:mm:ss
+        <div class="grid" id="timer" data-target="2025-11-01T00:00:00"></div>
+      -->
+
+      <div class="grid" id="timer" role="group" aria-label="Таймер обратного отсчёта">
+        <article class="unit" aria-live="off"><div class="value" id="d">0</div><div class="label" id="dl">дней</div></article>
+        <article class="unit" aria-live="off"><div class="value" id="h">0</div><div class="label" id="hl">часов</div></article>
+        <article class="unit" aria-live="off"><div class="value" id="m">0</div><div class="label" id="ml">минут</div></article>
+        <article class="unit" aria-live="off"><div class="value" id="s">0</div><div class="label" id="sl">секунд</div></article>
+      </div>
+
+      <p class="hint">Под капотом только чистый HTML/CSS/JS. Для кастомной даты задайте <code>data-target</code> на контейнере с id <code>timer</code>.</p>
+
+      <div id="a11y" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+    </section>
+  </main>
+
+  <script>
+    // Русская морфология: день/дня/дней и т.п.
+    function plural(n, one, few, many) {
+      const mod10 = n % 10, mod100 = n % 100;
+      if (mod10 === 1 && mod100 !== 11) return one;        // 1
+      if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few; // 2-4
+      return many; // 0, 5-20, 25-30, ...
+    }
+
+    function getTargetFromAttr() {
+      const el = document.getElementById('timer');
+      const attr = el.getAttribute('data-target');
+      if (attr) {
+        const parsed = new Date(attr);
+        if (!isNaN(parsed)) return parsed;
+      }
+      const now = new Date();
+      // Месяцы в JS с 0: ноябрь = 10. Отсчёт до 1 ноября 00:00 локального времени
+      let target = new Date(now.getFullYear(), 10, 1, 0, 0, 0, 0);
+      if (now >= target) target.setFullYear(target.getFullYear() + 1);
+      return target;
+    }
+
+    const target = getTargetFromAttr();
+    const title = document.getElementById('timer-title');
+    const sub = document.getElementById('timer-sub');
+
+    function update() {
+      const now = new Date();
+      let diff = target - now; // миллисекунды
+
+      if (diff <= 0) {
+        // Дошли! Фиксируем 0 и сообщение
+        document.getElementById('d').textContent = '0';
+        document.getElementById('h').textContent = '0';
+        document.getElementById('m').textContent = '0';
+        document.getElementById('s').textContent = '0';
+        document.getElementById('dl').textContent = 'дней';
+        document.getElementById('hl').textContent = 'часов';
+        document.getElementById('ml').textContent = 'минут';
+        document.getElementById('sl').textContent = 'секунд';
+        title.textContent = 'С наступившим 1 ноября!';
+        sub.textContent = 'Можно обновить страницу — таймер переключится на следующий год.';
+        document.getElementById('a11y').textContent = 'Отсчёт завершён: наступило 1 ноября.';
+        return; // прекращаем обновления
+      }
+
+      const sec = Math.floor(diff / 1000);
+      const days = Math.floor(sec / 86400);
+      const hours = Math.floor((sec % 86400) / 3600);
+      const mins = Math.floor((sec % 3600) / 60);
+      const secs = sec % 60;
+
+      document.getElementById('d').textContent = String(days);
+      document.getElementById('h').textContent = String(hours).padStart(2, '0');
+      document.getElementById('m').textContent = String(mins).padStart(2, '0');
+      document.getElementById('s').textContent = String(secs).padStart(2, '0');
+
+      document.getElementById('dl').textContent = plural(days, 'день', 'дня', 'дней');
+      document.getElementById('hl').textContent = plural(hours, 'час', 'часа', 'часов');
+      document.getElementById('ml').textContent = plural(mins, 'минута', 'минуты', 'минут');
+      document.getElementById('sl').textContent = plural(secs, 'секунда', 'секунды', 'секунд');
+
+      // Обновляем доступное текстовое описание раз в минуту / секунду
+      document.getElementById('a11y').textContent = `Осталось ${days} ${plural(days,'день','дня','дней')}, ${hours} ${plural(hours,'час','часа','часов')}, ${mins} ${plural(mins,'минута','минуты','минут')} и ${secs} ${plural(secs,'секунда','секунды','секунд')}.`;
+    }
+
+    // Первоначальная инициализация подзаголовка с конкретным годом
+    (function initSubtitle() {
+      const y = target.getFullYear();
+      sub.innerHTML = `Считаем до полуночи 1&nbsp;ноября <strong>${y}</strong> года (локальное время устройства).`;
+    })();
+
+    update();
+    // обновляем раз в 1 секунду
+    const timerId = setInterval(() => {
+      update();
+      // Если прошли цель — остановим интервалы
+      if (new Date() >= target) clearInterval(timerId);
+    }, 1000);
+  </script>
+</body>
+</html>
