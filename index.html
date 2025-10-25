@@ -127,6 +127,24 @@
     }
       /* Canvas overlay for fireworks */
     #fx { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+    /* Sound toggle button */
+    .sound-toggle {
+      position: fixed; right: 16px; bottom: 16px;
+      z-index: 1000;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(18,23,56,.8);
+      color: var(--text);
+      backdrop-filter: blur(8px) saturate(120%);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit; font-weight: 700; letter-spacing: .2px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .sound-toggle[aria-pressed="true"] { outline: 2px solid rgba(124,58,237,.6); }
+
+    /* Canvas overlay for fireworks */
+    #fx { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
 </style>
 </head>
 <body>
@@ -155,6 +173,7 @@
   </main>
     <!-- Fireworks canvas overlay -->
     <canvas id="fx" aria-hidden="true"></canvas>
+    <button id="soundToggle" class="sound-toggle" aria-pressed="false" aria-label="Переключить звук фейерверка">🔈 Звук: выкл</button>
 
   <script>
     /* ===== Fireworks engine (vanilla JS + canvas) ===== */
@@ -236,6 +255,72 @@
     }
     /* ===== End fireworks engine ===== */
 
+    /* ===== Simple WebAudio SFX for fireworks ===== */
+    class SoundFX {
+      constructor() {
+        this.enabled = false;
+        this.ctx = null;
+        this.master = null;
+        this.noiseBuffer = null;
+      }
+      _ensure() {
+        if (this.ctx) return true;
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return false;
+        this.ctx = new AC();
+        this.master = this.ctx.createGain();
+        this.master.gain.value = 0.28; // общая громкость
+        this.master.connect(this.ctx.destination);
+        // Шумовой буфер (1 секунда белого шума)
+        const len = this.ctx.sampleRate;
+        const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+        this.noiseBuffer = buf;
+        return true;
+      }
+      enable(flag = true) {
+        if (flag) {
+          if (!this._ensure()) return;
+          if (this.ctx.state === 'suspended') this.ctx.resume();
+        }
+        this.enabled = flag;
+      }
+      toggle() { this.enable(!this.enabled); return this.enabled; }
+      noise(duration = 0.5, freq = 1000, type = 'bandpass', startGain = 1.0) {
+        if (!this.enabled || !this._ensure()) return;
+        const ctx = this.ctx;
+        const src = ctx.createBufferSource();
+        src.buffer = this.noiseBuffer;
+        const filter = ctx.createBiquadFilter();
+        filter.type = type;
+        filter.frequency.value = freq;
+        filter.Q.value = 0.9;
+        const gain = ctx.createGain();
+        const now = ctx.currentTime;
+        gain.gain.setValueAtTime(Math.max(0.001, startGain), now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        src.connect(filter); filter.connect(gain); gain.connect(this.master);
+        src.start();
+        src.stop(now + duration);
+      }
+      boom() {
+        // низкий «бум»
+        this.noise(0.55 + Math.random() * 0.2, 800, 'bandpass', 1.2);
+        // треск после взрыва
+        for (let i = 0; i < 3; i++) {
+          const t = 0.10 + i * 0.12 + Math.random() * 0.05;
+          setTimeout(() => this.noise(0.08, 3500, 'bandpass', 0.6), t * 1000);
+        }
+      }
+      firework() { this.boom(); }
+      finale() {
+        if (!this.enabled) return;
+        for (let i = 0; i < 16; i++) setTimeout(() => this.boom(), i * 120);
+      }
+    }
+    /* ===== End SFX ===== */
+
     // Русская морфология: день/дня/дней и т.п.
     function plural(n, one, few, many) {
       const mod10 = n % 10, mod100 = n % 100;
@@ -260,9 +345,31 @@
 
     const target = getTargetFromAttr();
     const fx = new Fireworks(document.getElementById('fx'));
+    const sfx = new SoundFX();
     let prevDays = null;
+    let celebrationTimer = null;
+
+    const soundBtn = document.getElementById('soundToggle');
+    function refreshSoundBtn(){
+      soundBtn.setAttribute('aria-pressed', sfx.enabled ? 'true' : 'false');
+      soundBtn.textContent = sfx.enabled ? '🔊 Звук: вкл' : '🔈 Звук: выкл';
+    }
+    soundBtn.addEventListener('click', () => { sfx.toggle(); refreshSoundBtn(); });
+    refreshSoundBtn();
     const title = document.getElementById('timer-title');
     const sub = document.getElementById('timer-sub');
+
+    function startCelebration(durationMs = 10000) {
+      // серия залпов ~durationMs, каждые ~0.5с
+      const end = Date.now() + durationMs;
+      if (celebrationTimer) { clearInterval(celebrationTimer); celebrationTimer = null; }
+      // стартовый залп
+      try { fx.burstRandom(3); sfx.firework(); } catch(_){}
+      celebrationTimer = setInterval(() => {
+        try { fx.burstRandom(2 + Math.floor(Math.random() * 2)); sfx.firework(); } catch(_){}
+        if (Date.now() >= end) { clearInterval(celebrationTimer); celebrationTimer = null; }
+      }, 550);
+    }
 
     function update() {
       const now = new Date();
@@ -281,7 +388,7 @@
         title.textContent = 'С наступившим 1 ноября!';
         sub.textContent = 'Можно обновить страницу — таймер переключится на следующий год.';
         document.getElementById('a11y').textContent = 'Отсчёт завершён: наступило 1 ноября.';
-        try { fx.finale(); } catch(_) {}
+        try { fx.finale(); sfx.finale(); } catch(_) {}
         return; // прекращаем обновления
       }
 
@@ -293,9 +400,9 @@
 
       // Если сменилось число дней — запустим салют
       if (prevDays === null) {
-        prevDays = days;
+      prevDays = days;
       } else if (days !== prevDays) {
-        try { fx.burstRandom(4); } catch(_) {}
+        startCelebration(10000); // ~10с салют
         prevDays = days;
       }
 
