@@ -439,18 +439,26 @@
     }
 
     const target = getTargetFromAttr();
-    const fx = new Fireworks(document.getElementById('fx'));
+    const fxCanvas = document.getElementById('fx') || (function(){
+      const c = document.createElement('canvas');
+      c.id = 'fx'; c.setAttribute('aria-hidden','true');
+      c.style.position = 'fixed'; c.style.inset = 0; c.style.pointerEvents = 'none'; c.style.zIndex = 999;
+      document.body.appendChild(c); return c; })();
+    const fx = new Fireworks(fxCanvas);
     const sfx = new SoundFX();
     let prevDays = null;
     let celebrationTimer = null;
 
     const soundBtn = document.getElementById('soundToggle');
     function refreshSoundBtn(){
+      if (!soundBtn) return;
       soundBtn.setAttribute('aria-pressed', sfx.enabled ? 'true' : 'false');
       soundBtn.textContent = sfx.enabled ? '🔊 Звук: вкл' : '🔈 Звук: выкл';
     }
-    soundBtn.addEventListener('click', () => { sfx.toggle(); refreshSoundBtn(); });
-    refreshSoundBtn();
+    if (soundBtn) {
+      soundBtn.addEventListener('click', () => { sfx.toggle(); refreshSoundBtn(); });
+      refreshSoundBtn();
+    }
     const title = document.getElementById('timer-title');
     const sub = document.getElementById('timer-sub');
 
