@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Время до Венеры</title>
+  <title>До 1 ноября 2025</title>
   <style>
     :root{
-      --bg:#0b1220;          /* тёмный фон */
-      --card:#121a2b;        /* карточки таймера */
-      --edge:#1c2842;        /* лёгкая окантовка */
-      --text:#eaf2ff;        /* основной текст */
-      --muted:#97a2bf;       /* подписи */
-      --accent:#70b8ff;      /* акцент */
-      --accent-2:#ff8fb6;    /* второй акцент */
+      --bg:#0b1220;
+      --card:#121a2b;
+      --edge:#1c2842;
+      --text:#eaf2ff;
+      --muted:#97a2bf;
+      --accent:#70b8ff;
+      --accent-2:#ff8fb6;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -24,13 +24,11 @@
       color:var(--text);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
-    header{
-      text-align:center; padding:40px 16px 8px; line-height:1.2;
-    }
-    h1{margin:0; font-size:clamp(1.4rem, 3.5vw, 2.2rem); font-weight:800; letter-spacing:.3px}
-    .sub{margin-top:6px; color:var(--muted); font-size:clamp(.9rem, 2.2vw, 1rem)}
+    header{ text-align:center; padding:40px 16px 8px; line-height:1.2; }
+    h1{ margin:0; font-size:clamp(1.4rem, 3.5vw, 2.2rem); font-weight:800; letter-spacing:.3px }
+    .sub{ margin-top:6px; color:var(--muted); font-size:clamp(.9rem, 2.2vw, 1rem) }
 
-    .wrap{max-width:1024px; margin:0 auto; padding:12px 16px 56px}
+    .wrap{ max-width:1024px; margin:0 auto; padding:12px 16px 56px }
 
     .timer{
       display:grid; grid-template-columns:repeat(4, minmax(130px, 1fr)); gap:14px;
@@ -42,11 +40,11 @@
       box-shadow:0 30px 50px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.04);
       position:relative; overflow:hidden;
     }
-    .unit::after{ /* лёгкий блик */
+    .unit::after{
       content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(255,255,255,.04), transparent 40%);
       pointer-events:none;
     }
-    .label{color:var(--muted); font-weight:600; font-size:.92rem; letter-spacing:.32px; text-transform:uppercase}
+    .label{ color:var(--muted); font-weight:600; font-size:.92rem; letter-spacing:.32px; text-transform:uppercase }
     .value{
       font-variant-numeric:tabular-nums slashed-zero; line-height:1;
       margin-top:10px; font-weight:900; letter-spacing:.5px;
@@ -63,27 +61,46 @@
     .btn:active{transform:translateY(0)}
     .hint{color:var(--muted); text-align:center; margin-top:6px; font-size:.92rem}
 
-    /* Полнэкранный canvas с салютом */
     #fx{position:fixed; inset:0; opacity:0; pointer-events:none; transition:opacity .35s ease; display:block; z-index:50;}
     #fx.show{opacity:1}
-
-    /* Лёгкая подсветка фона при салюте */
-    #fxBack{
-      position:fixed; inset:0; background:radial-gradient(1000px 500px at 50% 60%, rgba(255,255,255,.05), rgba(0,0,0,.7));
-      opacity:0; pointer-events:none; transition:opacity .35s ease; z-index:49;
-    }
+    #fxBack{ position:fixed; inset:0; background:radial-gradient(1000px 500px at 50% 60%, rgba(255,255,255,.05), rgba(0,0,0,.7));
+      opacity:0; pointer-events:none; transition:opacity .35s ease; z-index:49;}
     #fxBack.show{opacity:1}
 
-    /* Мобильная адаптация */
-    @media (max-width: 640px){
-      .timer{grid-template-columns:repeat(2, minmax(130px,1fr))}
+    #overlay{
+      position:fixed; inset:0; display:grid; place-items:center;
+      background:rgba(0,0,0,.6);
+      opacity:0; pointer-events:none; transition:opacity .35s ease; z-index:60;
     }
-  </style>
+    #overlay.show{ opacity:1; pointer-events:auto; }
+    #overlay img, #overlay #ovText{
+      display:none; max-width:min(90vw, 640px); max-height:80vh;
+    }
+    #overlay .visible{ display:block; animation:pop .35s ease; }
+    #ovText{ font-size:clamp(3rem, 12vw, 8rem); font-weight:900; color:#fff; text-shadow:0 4px 30px rgba(0,0,0,.6); }
+    @keyframes pop{ 0%{transform:scale(.9);opacity:.001} 100%{transform:scale(1);opacity:1} }
+
+    @media (max-width: 640px){ .timer{grid-template-columns:repeat(2, minmax(130px,1fr))} }
+  
+  /* усиленная стилизация текста "Ой" для лучшей видимости поверх салюта */
+  #ovText{ display:none; }
+  #overlay #ovText.visible{
+    display:block;
+    font-size:min(18vw, 180px);
+    line-height:1;
+    font-weight:900;
+    color:#fff;
+    text-transform:uppercase;
+    text-shadow:0 6px 20px rgba(0,0,0,.9), 0 0 40px rgba(255,255,255,.35);
+    -webkit-text-stroke:4px rgba(0,0,0,.45);
+    letter-spacing:.04em; padding:.1em .2em; border-radius:16px;
+  }
+</style>
 </head>
 <body>
   <header>
-    <h1>Время до <span id="targetLabel">Венеры</span></h1>
-    <div class="sub"></div>
+    <h1>Время до <span id="targetLabel">1 ноября 2025</span></h1>
+    <div class="sub">В момент наступления 1 ноября 2025 таймер остановится на 00:00:00 и не перезапустится.</div>
   </header>
 
   <div class="wrap">
@@ -108,41 +125,62 @@
 
     <div class="controls">
       <button class="btn" id="soundBtn" aria-pressed="false" title="Включить/выключить звук">🔇 Звук выкл.</button>
-    
     </div>
     <div class="hint"></div>
   </div>
 
-  <!-- Подложка и канвас салюта (всегда поверх) -->
   <div id="fxBack" aria-hidden="true"></div>
   <canvas id="fx" aria-hidden="true"></canvas>
 
+  <div id="overlay" aria-hidden="true">
+    <img id="ovImg1" src="img1.jpg" alt="Первая картинка" />
+    <div id="ovText">ой</div>
+    <img id="ovImg2" src="img2.jpg" alt="Вторая картинка" />
+  </div>
+
+  <!-- 🎵 Дорожка финала; положите song.mp3 рядом с этим HTML -->
+  <audio id="finalSong" src="song.mp3" preload="auto" loop></audio>
+
 <script>
 (function(){
-  // ---------- УТИЛИТЫ ДАТЫ ----------
-  function getTargetNov1(){
-    const now = new Date();
-    const year = now.getFullYear();
-    let target = new Date(year, 10, 1, 0, 0, 0, 0); // месяц 10 = ноябрь
-    if (now >= target) target = new Date(year + 1, 10, 1, 0, 0, 0, 0);
-    return target;
-  }
+  // ====== Фиксируем цель на 1 ноября 2025 00:00 (локальное время браузера) ======
+  const TARGET = new Date(2025, 10, 1, 0, 0, 0, 0);
   const targetLabel = document.getElementById('targetLabel');
-  let TARGET = getTargetNov1();
-  targetLabel.textContent = `Венеры`;
+  targetLabel.textContent = '1 ноября 2025';
 
   const dom = { d: document.getElementById('d'), h: document.getElementById('h'), m: document.getElementById('m'), s: document.getElementById('s') };
   const pad2 = n => String(n).padStart(2,'0');
-
   let prevDays = null;
+
+  let endedFired = false; // последовательность запускаем один раз
+  let holdZeroUntil = 0;  // удерживаем нули, пока идёт показ оверлея
 
   function compute(){
     const now = new Date();
-    if (now >= TARGET) { // на случай, если вкладка открыта годами :)
-      TARGET = getTargetNov1();
-      targetLabel.textContent = `Венеры`;
+
+    if (!endedFired && now >= TARGET){
+      endedFired = true;
+      holdZeroUntil = now.getTime() + 4800;
+
+      // Немедленно показать нули
+      dom.d.textContent = '00';
+      dom.h.textContent = '00';
+      dom.m.textContent = '00';
+      dom.s.textContent = '00';
+
+      endSequence();
+      // откладываем запуск на следующий тик, чтобы объект fireworks успел инициализироваться
+      setTimeout(() => triggerFireworks(Infinity), 0);
     }
-    let diff = TARGET - now; if (diff < 0) diff = 0;
+
+    // После достижения цели таймер НЕ перезапускается
+    let diff;
+    if (Date.now() < holdZeroUntil){
+      diff = 0;
+    } else {
+      diff = Math.max(0, TARGET - now);
+    }
+
     const totalSec = Math.floor(diff / 1000);
     const days = Math.floor(totalSec / 86400);
     const hours = Math.floor((totalSec % 86400) / 3600);
@@ -154,7 +192,7 @@
     dom.m.textContent = pad2(mins);
     dom.s.textContent = pad2(secs);
 
-    if (prevDays !== null && days !== prevDays) {
+    if (prevDays !== null && days !== prevDays && totalSec > 0) {
       triggerFireworks(10_000);
     }
     prevDays = days;
@@ -162,7 +200,7 @@
   compute();
   setInterval(compute, 250);
 
-  // ---------- АУДИО (Web Audio API) ----------
+  // ====== Аудио эффектов (Web Audio) ======
   let audioCtx = null;
   let audioEnabled = false;
 
@@ -170,94 +208,73 @@
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
 
-  function playWhistle(duration = 0.9, style = 'rise'){
-  if (typeof audioEnabled !== 'undefined' && !audioEnabled) return;
-  if (typeof ensureAudio === 'function') ensureAudio();
-  const ctx = (typeof audioCtx !== 'undefined') ? audioCtx : (window.audioCtx || new (window.AudioContext || window.webkitAudioContext)());
-  window.audioCtx = ctx;
-  const t0  = ctx.currentTime;
+  function playWhistle(duration = 0.9){
+    if (!audioEnabled) return;
+    ensureAudio();
+    const ctx = audioCtx;
+    const t0  = ctx.currentTime;
 
-  // Core nodes
-  const osc    = ctx.createOscillator();
-  const filter = ctx.createBiquadFilter();
-  const gain   = ctx.createGain();
-  const panner = (ctx.createStereoPanner ? ctx.createStereoPanner() : null);
+    const osc    = ctx.createOscillator();
+    const filter = ctx.createBiquadFilter();
+    const gain   = ctx.createGain();
+    const panner = (ctx.createStereoPanner ? ctx.createStereoPanner() : null);
 
-  // Gentle air hiss for realism
-  const hissBuf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * duration), ctx.sampleRate);
-  const hiss    = ctx.createBufferSource(); hiss.buffer = hissBuf;
-  const hissF   = ctx.createBiquadFilter(); hissF.type = 'bandpass';
-  const hissG   = ctx.createGain();
+    const hissBuf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * duration), ctx.sampleRate);
+    const hiss    = ctx.createBufferSource(); hiss.buffer = hissBuf;
+    const hissF   = ctx.createBiquadFilter(); hissF.type = 'bandpass';
+    const hissG   = ctx.createGain();
 
-  // Fill noise (decaying envelope)
-  const ch = hissBuf.getChannelData(0);
-  for (let i=0;i<ch.length;i++){
-    const t = i / hissBuf.sampleRate;
-    ch[i] = (Math.random()*2 - 1) * (1 - t);
+    const ch = hissBuf.getChannelData(0);
+    for (let i=0;i<ch.length;i++){
+      const t = i / hissBuf.sampleRate;
+      ch[i] = (Math.random()*2 - 1) * (1 - t);
+    }
+
+    const lfo     = ctx.createOscillator();
+    const lfoGain = ctx.createGain();
+
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(0.22, t0 + 0.06);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+
+    osc.connect(filter).connect(gain);
+    if (panner){ gain.connect(panner); panner.connect(ctx.destination); }
+    else { gain.connect(ctx.destination); }
+
+    hiss.connect(hissF).connect(hissG).connect(ctx.destination);
+
+    const S = { wave:'triangle', f0: 800+Math.random()*150, f1: 1900+Math.random()*450, vibHz:6.5, vibAmtHz:18, q:14, fil0:1100, fil1:2800, hiss:0.03 };
+
+    osc.type = S.wave;
+    osc.frequency.setValueAtTime(S.f0, t0);
+    osc.frequency.exponentialRampToValueAtTime(S.f1, t0 + duration * 0.9);
+
+    filter.type = 'bandpass';
+    filter.Q.setValueAtTime(S.q, t0);
+    filter.frequency.setValueAtTime(S.fil0, t0);
+    filter.frequency.exponentialRampToValueAtTime(S.fil1, t0 + duration * 0.9);
+
+    lfo.frequency.setValueAtTime(S.vibHz, t0);
+    const lfoGainNode = ctx.createGain();
+    lfoGainNode.gain.setValueAtTime(18, t0);
+    lfo.connect(lfoGainNode).connect(osc.frequency);
+    lfo.start(t0); lfo.stop(t0 + duration);
+
+    hissF.frequency.setValueAtTime((S.f0+S.f1)/2, t0);
+    hissF.Q.setValueAtTime(S.q*0.8, t0);
+    hissG.gain.setValueAtTime(S.hiss, t0);
+    hiss.start(t0); hiss.stop(t0 + duration);
+
+    if (panner) panner.pan.setValueAtTime((Math.random()*2 - 1) * 0.25, t0);
+
+    osc.start(t0);    osc.stop(t0 + duration);
   }
-
-  // Vibrato via LFO
-  const lfo     = ctx.createOscillator();
-  const lfoGain = ctx.createGain();
-
-  // Amplitude envelope
-  gain.gain.setValueAtTime(0.0001, t0);
-  gain.gain.exponentialRampToValueAtTime(0.22, t0 + 0.06);
-  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
-
-  // Routing
-  osc.connect(filter).connect(gain);
-  if (panner){ gain.connect(panner); panner.connect(ctx.destination); }
-  else { gain.connect(ctx.destination); }
-
-  hiss.connect(hissF).connect(hissG).connect(ctx.destination);
-
-  // Presets
-  let S;
-  const presets = {
-    rise:   { wave:'triangle', f0: 800+Math.random()*150, f1: 1900+Math.random()*450, vibHz:6.5, vibAmtHz:18, q:14, fil0:1100, fil1:2800, hiss:0.03 },
-    warble: { wave:'sawtooth', f0: 950,                   f1: 1500,                   vibHz:12,  vibAmtHz:40, q:18, fil0:1300, fil1:2200, hiss:0.035 },
-    fall:   { wave:'triangle', f0: 2200,                  f1: 850,                    vibHz:7.5, vibAmtHz:16, q:12, fil0:2600, fil1:1200, hiss:0.025 },
-    thin:   { wave:'sine',     f0: 1000,                  f1: 2000,                   vibHz:8.0, vibAmtHz:10, q:22, fil0:1400, fil1:2600, hiss:0.02 },
-  };
-  S = presets[style] || { wave:'triangle', f0:900, f1:2000, vibHz:6.5, vibAmtHz:18, q:14, fil0:1200, fil1:2800, hiss:0.03 };
-
-  // Configure nodes
-  osc.type = S.wave;
-  osc.frequency.setValueAtTime(S.f0, t0);
-  osc.frequency.exponentialRampToValueAtTime(S.f1, t0 + duration * 0.9);
-
-  filter.type = 'bandpass';
-  filter.Q.setValueAtTime(S.q, t0);
-  filter.frequency.setValueAtTime(S.fil0, t0);
-  filter.frequency.exponentialRampToValueAtTime(S.fil1, t0 + duration * 0.9);
-
-  // Vibrato
-  lfo.frequency.setValueAtTime(S.vibHz, t0);
-  lfoGain.gain.setValueAtTime(S.vibAmtHz, t0);
-  lfo.connect(lfoGain);
-  lfoGain.connect(osc.frequency);
-
-  // Hiss
-  hissF.frequency.setValueAtTime((S.f0+S.f1)/2, t0);
-  hissF.Q.setValueAtTime(S.q*0.8, t0);
-  hissG.gain.setValueAtTime(S.hiss, t0);
-  hiss.start(t0); hiss.stop(t0 + duration);
-
-  // Slight random stereo position
-  if (panner) panner.pan.setValueAtTime((Math.random()*2 - 1) * 0.25, t0);
-
-  // Start/stop
-  osc.start(t0);    osc.stop(t0 + duration);
-  lfo.start(t0);    lfo.stop(t0 + duration + 0.01);
-}
 
   function playExplosion(){
     if (!audioEnabled) return;
     ensureAudio();
     const ctx = audioCtx; const t0 = ctx.currentTime;
 
-    // Низкочастотный «бум»
     const boomOsc = ctx.createOscillator();
     const boomGain = ctx.createGain();
     boomOsc.type = 'sine';
@@ -268,11 +285,10 @@
     boomOsc.connect(boomGain).connect(ctx.destination);
     boomOsc.start(t0); boomOsc.stop(t0 + 1.3);
 
-    // Шумовой взрыв с полосовой фильтрацией
     const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < data.length; i++) {
-      data[i] = (Math.random() * 2 - 1) * (1 - i / data.length); // затухающий белый шум
+      data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
     }
     const noise = ctx.createBufferSource(); noise.buffer = buffer;
     const band = ctx.createBiquadFilter(); band.type = 'bandpass'; band.frequency.setValueAtTime(2200, t0);
@@ -283,7 +299,6 @@
     noise.connect(band).connect(nGain).connect(ctx.destination);
     noise.start(t0); noise.stop(t0 + 1.5);
 
-    // Потрескивания искр
     for (let k = 0; k < 6; k++) {
       playCrackle(t0 + 0.2 + Math.random() * 0.6);
     }
@@ -306,7 +321,33 @@
     src.start(atTime);
   }
 
-  // ---------- ВИЗУАЛЬНЫЙ САЛЮТ (Canvas) ----------
+  // ====== Музыка финального салюта (HTMLAudio) ======
+  const finalSong = document.getElementById('finalSong');
+  finalSong.volume = 0.85; // при желании поменяйте громкость (0..1)
+  let songPrimed = false;
+
+  function primeFinalSong(){
+    if (songPrimed) return;
+    try {
+      // Разрешаем дальнейшее программное воспроизведение — вызываем play() в ответ на клик
+      finalSong.muted = true;
+      finalSong.play().then(() => {
+        finalSong.pause();
+        finalSong.muted = false;
+        finalSong.currentTime = 0;
+        songPrimed = true;
+      }).catch(() => {});
+    } catch(e) {}
+  }
+  function playFinalSong(){
+    if (!audioEnabled) return; // подчиняемся общей кнопке звука
+    try { finalSong.currentTime = 0; finalSong.play().catch(() => {}); } catch(e) {}
+  }
+  function stopFinalSong(){
+    try { finalSong.pause(); } catch(e) {}
+  }
+
+  // ====== Визуальный салют (Canvas) ======
   const canvas = document.getElementById('fx');
   const back = document.getElementById('fxBack');
   const ctx2d = canvas.getContext('2d');
@@ -323,13 +364,13 @@
   window.addEventListener('resize', resizeCanvas, { passive:true });
   resizeCanvas();
 
-  const GRAVITY = 90; // px/s^2
-  const AIR = 0.995;  // лёгкое сопротивление
+  const GRAVITY = 90;
+  const AIR = 0.995;
 
   class Particle{
     constructor(x, y, angle, speed, color){
       this.x=x; this.y=y; this.vx=Math.cos(angle)*speed; this.vy=Math.sin(angle)*speed;
-      this.alpha=1; this.life = 0.9 + Math.random()*0.6; // сек
+      this.alpha=1; this.life = 0.9 + Math.random()*0.6;
       this.color=color; this.size=1.4 + Math.random()*2.2; this.spark = Math.random() < 0.2;
     }
     update(dt){
@@ -345,7 +386,7 @@
       ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
       ctx.fillStyle = this.color;
       ctx.fill();
-      if (this.spark && Math.random() < 0.4){ // маленькие искры вокруг
+      if (this.spark && Math.random() < 0.4){
         ctx.globalAlpha = Math.max(0, this.alpha*0.7);
         ctx.fillRect(this.x + (Math.random()-0.5)*6, this.y + (Math.random()-0.5)*6, 1.2, 1.2);
       }
@@ -368,7 +409,7 @@
     }
     update(dt){
       if (this.exploded) return;
-      this.vy += 120 * dt; // тянет вниз
+      this.vy += 120 * dt;
       this.x += this.vx * dt; this.y += this.vy * dt;
       this.trail.push({x:this.x, y:this.y, a:1}); if (this.trail.length > 12) this.trail.shift();
       if (!this.swishPlayed){ playWhistle(0.9); this.swishPlayed = true; }
@@ -376,14 +417,12 @@
     }
     explode(){
       if (this.exploded) return; this.exploded = true;
-      // Основные частицы
       const count = 120 + Math.floor(Math.random()*80);
       for (let i=0;i<count;i++){
         const angle = Math.random()*Math.PI*2;
         const speed = 90 + Math.random()*260;
         fireworks.particles.push(new Particle(this.x, this.y, angle, speed, this.color));
       }
-      // Жёлтые искры
       for (let i=0;i<30;i++){
         const angle = Math.random()*Math.PI*2;
         const speed = 40 + Math.random()*80;
@@ -393,7 +432,6 @@
     }
     draw(ctx){
       if (this.exploded) return;
-      // Шлейф
       ctx.strokeStyle = this.color;
       ctx.lineWidth = 2;
       ctx.globalAlpha = .7;
@@ -402,7 +440,6 @@
         const t = this.trail[i]; i===0 ? ctx.moveTo(t.x, t.y) : ctx.lineTo(t.x, t.y);
       }
       ctx.stroke(); ctx.globalAlpha = 1;
-      // Голова ракеты
       ctx.beginPath(); ctx.arc(this.x, this.y, 2.2, 0, Math.PI*2); ctx.fillStyle=this.color; ctx.fill();
     }
   }
@@ -412,19 +449,20 @@
     rockets:[], particles:[], last:0, endAt:0,
     _failsafe: null,
     start(durationMs=10000){
-      // если уже запущен — перезапустим чисто
       if (this.running) this.stop();
       this.running = true;
       back.classList.add('show'); canvas.classList.add('show');
-      this.last = performance.now(); this.endAt = this.last + durationMs;
-      // Фейлсейф: гарантированно выключить затемнение
-      this._failsafe = setTimeout(() => {
-        if (this.running) this.stop();
-      }, durationMs + 2000);
+      this.last = performance.now();
+      this.endAt = (Number.isFinite(durationMs) ? this.last + durationMs : Infinity);
+      if (Number.isFinite(durationMs)) {
+        this._failsafe = setTimeout(() => { if (this.running) this.stop(); }, durationMs + 2000);
+      } else {
+        this._failsafe = null;
+      }
       this.loop();
     },
     stop(){
-      this.running = false; 
+      this.running = false;
       if (this._failsafe){ clearTimeout(this._failsafe); this._failsafe = null; }
       this.rockets.length = 0; this.particles.length = 0;
       back.classList.remove('show'); canvas.classList.remove('show');
@@ -434,21 +472,17 @@
     loop(){
       if (!this.running) return;
       const now = performance.now();
-      const dt = Math.min((now - this.last) / 1000, 0.035); // ограничим dt для стабильности
+      const dt = Math.min((now - this.last) / 1000, 0.035);
       this.last = now;
 
-      // фоновая дымка
       ctx2d.fillStyle = 'rgba(0,0,0,.20)';
       ctx2d.fillRect(0,0,canvas.width,canvas.height);
 
-      // Спауним ракеты в течение заданного времени
       if (now < this.endAt) {
         if (Math.random() < 0.14) this.spawnRocket();
       }
 
-      // Обновление / рисование
       for (const r of this.rockets) { r.update(dt); r.draw(ctx2d); }
-      // УДАЛЯЕМ взорвавшиеся ракеты сразу, иначе они остаются навсегда из-за несжимающегося следа
       this.rockets = this.rockets.filter(r => !r.exploded);
 
       ctx2d.globalCompositeOperation = 'lighter';
@@ -456,7 +490,6 @@
       ctx2d.globalCompositeOperation = 'source-over';
       this.particles = this.particles.filter(p => p.alpha > 0 && p.y < canvas.height + 80);
 
-      // Завершение: когда всё погасло — останавливаем
       if (now >= this.endAt && this.rockets.length === 0 && this.particles.length === 0) {
         this.stop(); return;
       }
@@ -466,19 +499,55 @@
 
   function triggerFireworks(ms){ fireworks.start(ms || 10_000); }
 
-  // Кнопки управления
   const soundBtn = document.getElementById('soundBtn');
-  const testBtn  = document.getElementById('testBtn');
-
   soundBtn.addEventListener('click', async () => {
     if (!audioCtx) ensureAudio();
     if (audioCtx.state === 'suspended') await audioCtx.resume();
     audioEnabled = !audioEnabled;
     soundBtn.setAttribute('aria-pressed', String(audioEnabled));
     soundBtn.textContent = audioEnabled ? '🔊 Звук вкл.' : '🔇 Звук выкл.';
+
+    if (audioEnabled){
+      // Разрешим дальнейший программный старт музыки и включим её, если финал уже идёт
+      primeFinalSong();
+      if (endedFired) playFinalSong();
+    } else {
+      stopFinalSong();
+    }
   });
 
-  testBtn.addEventListener('click', () => triggerFireworks(5000));
+  // ====== Последовательность "картинка → ой → картинка" ======
+  const overlay = document.getElementById('overlay');
+  const ovImg1  = document.getElementById('ovImg1');
+  const ovImg2  = document.getElementById('ovImg2');
+  const ovText  = document.getElementById('ovText');
+
+  function endSequence(){
+    const showOnly = (el) => {
+      ovImg1.classList.remove('visible');
+      ovImg2.classList.remove('visible');
+      ovText.classList.remove('visible');
+      if (el) el.classList.add('visible');
+    };
+
+    overlay.classList.add('show');
+
+    // ▶️ Стартуем музыкальную дорожку параллельно финальному салюту
+    if (audioEnabled) playFinalSong();
+
+    // 1) первая картинка
+    showOnly(ovImg1);
+    setTimeout(() => { showOnly(null); }, 1400);
+
+    // 2) "ой"
+    setTimeout(() => { showOnly(ovText); }, 1600);
+    setTimeout(() => { showOnly(null); }, 3000);
+
+    // 3) вторая картинка
+    setTimeout(() => { showOnly(ovImg2); }, 3200);
+
+    // 4) оставляем вторую картинку навсегда — оверлей не закрываем
+}
 })();
 </script>
 </body>
