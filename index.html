@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>До 1 ноября 2025</title>
+  <title>До 26 декабря 2025</title>
   <style>
     :root{
       --bg:#0b1220;
@@ -99,7 +99,7 @@
 </head>
 <body>
   <header>
-    <h1>Время до <span id="targetLabel">1 ноября 2025</span></h1>
+    <h1>Время до <span id="targetLabel">26 декабря 2025</span></h1>
     <div class="sub"></div>
   </header>
 
@@ -144,9 +144,9 @@
 <script>
 (function(){
   // ====== Фиксируем цель на 1 ноября 2025 00:00 (локальное время браузера) ======
-  const TARGET = new Date(2025, 10, 1, 0, 0, 0, 0);
+  const TARGET = new Date(2025, 11, 27, 0, 0, 0, 0);
   const targetLabel = document.getElementById('targetLabel');
-  targetLabel.textContent = '1 ноября 2025';
+  targetLabel.textContent = '27 декабря 2025';
 
   const dom = { d: document.getElementById('d'), h: document.getElementById('h'), m: document.getElementById('m'), s: document.getElementById('s') };
   const pad2 = n => String(n).padStart(2,'0');
