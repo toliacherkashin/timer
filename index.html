@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>До 26 декабря 2025</title>
+  <title>До 27 декабря 2025</title>
   <style>
     :root{
       --bg:#0b1220;
@@ -11,95 +11,466 @@
       --edge:#1c2842;
       --text:#eaf2ff;
       --muted:#97a2bf;
-      --accent:#70b8ff;
-      --accent-2:#ff8fb6;
+
+      /* новогодние акценты */
+      --green:#62d36a;
+      --red:#ff4d6d;
+      --gold:#ffd166;
+      --ice:#7bdff2;
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,
-      "Noto Sans","Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 600px at 20% 0%, #0e1830 0, var(--bg) 60%),
-                  radial-gradient(800px 400px at 80% 20%, #0e1830 0, var(--bg) 60%), var(--bg);
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans","Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 600px at 20% 0%, #0e1830 0, var(--bg) 60%),
+        radial-gradient(800px 400px at 80% 20%, #0e1830 0, var(--bg) 60%),
+        var(--bg);
       color:var(--text);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
     }
-    header{ text-align:center; padding:40px 16px 8px; line-height:1.2; }
-    h1{ margin:0; font-size:clamp(1.4rem, 3.5vw, 2.2rem); font-weight:800; letter-spacing:.3px }
-    .sub{ margin-top:6px; color:var(--muted); font-size:clamp(.9rem, 2.2vw, 1rem) }
 
-    .wrap{ max-width:1024px; margin:0 auto; padding:12px 16px 56px }
+    /* мягкие “огоньки” и искры по фону */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(2px 2px at 12% 18%, rgba(255,255,255,.35), transparent 60%),
+        radial-gradient(1.5px 1.5px at 78% 22%, rgba(255,255,255,.22), transparent 60%),
+        radial-gradient(2px 2px at 44% 72%, rgba(255,255,255,.18), transparent 60%),
+        radial-gradient(160px 160px at 14% 85%, rgba(98,211,106,.12), transparent 60%),
+        radial-gradient(220px 220px at 88% 16%, rgba(255,77,109,.12), transparent 60%),
+        radial-gradient(180px 180px at 52% 10%, rgba(255,209,102,.10), transparent 60%);
+      z-index:0;
+    }
+
+    /* ===== верхняя гирлянда ===== */
+    #topGarland{
+      position:fixed;
+      left:0; right:0; top:0;
+      height:86px;
+      pointer-events:none;
+      z-index:18;
+      filter: drop-shadow(0 12px 28px rgba(0,0,0,.35));
+    }
+    #topGarland svg{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+    }
+    #topGarland .bulbs{
+      position:absolute; inset:0;
+    }
+    #topGarland .bulb{
+      position:absolute;
+      top:44px;
+      width:12px; height:12px;
+      border-radius:50%;
+      background: var(--c);
+      box-shadow: 0 0 10px rgba(255,255,255,.18), 0 0 26px var(--c);
+      transform:translate(-50%, -50%);
+      animation: bulbBlink 1.35s ease-in-out infinite alternate;
+      animation-delay: var(--d);
+    }
+    #topGarland .bulb::after{
+      content:"";
+      position:absolute;
+      left:50%; top:-7px;
+      transform:translateX(-50%);
+      width:7px; height:7px;
+      border-radius:3px;
+      background:rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    @keyframes bulbBlink{
+      from{ filter:brightness(.75); opacity:.85; }
+      to{ filter:brightness(1.45); opacity:1; }
+    }
+
+    header{
+      text-align:center;
+      padding:110px 16px 8px; /* место под гирлянду */
+      line-height:1.2;
+      position:relative;
+      z-index:20;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(1.4rem, 3.5vw, 2.2rem);
+      font-weight:800;
+      letter-spacing:.3px
+    }
+    #targetLabel{
+      color:var(--gold);
+      text-shadow:0 0 18px rgba(255,209,102,.25);
+    }
+    .sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:clamp(.9rem, 2.2vw, 1rem)
+    }
+
+    .wrap{
+      max-width:1024px;
+      margin:0 auto;
+      padding:12px 16px 340px; /* место под сугробы + ёлку */
+      position:relative;
+      z-index:20;
+    }
 
     .timer{
-      display:grid; grid-template-columns:repeat(4, minmax(130px, 1fr)); gap:14px;
-      align-items:stretch; margin-top:18px;
+      display:grid;
+      grid-template-columns:repeat(4, minmax(130px, 1fr));
+      gap:14px;
+      align-items:stretch;
+      margin-top:18px;
     }
     .unit{
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.08)), var(--card);
-      border:1px solid var(--edge); border-radius:18px; padding:18px 16px; text-align:center;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.08)),
+        var(--card);
+      border:1px solid var(--edge);
+      border-radius:18px;
+      padding:18px 16px;
+      text-align:center;
       box-shadow:0 30px 50px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.04);
-      position:relative; overflow:hidden;
+      position:relative;
+      overflow:hidden;
     }
     .unit::after{
-      content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(255,255,255,.04), transparent 40%);
+      content:"";
+      position:absolute; inset:0;
+      background:linear-gradient(180deg, rgba(255,255,255,.04), transparent 40%);
       pointer-events:none;
     }
-    .label{ color:var(--muted); font-weight:600; font-size:.92rem; letter-spacing:.32px; text-transform:uppercase }
+    .label{
+      color:var(--muted);
+      font-weight:600;
+      font-size:.92rem;
+      letter-spacing:.32px;
+      text-transform:uppercase
+    }
     .value{
-      font-variant-numeric:tabular-nums slashed-zero; line-height:1;
-      margin-top:10px; font-weight:900; letter-spacing:.5px;
+      font-variant-numeric:tabular-nums slashed-zero;
+      line-height:1;
+      margin-top:10px;
+      font-weight:900;
+      letter-spacing:.5px;
       font-size:clamp(2.4rem, 9vw, 4.4rem);
       text-shadow:0 6px 22px rgba(0,0,0,.45);
     }
 
-    .controls{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center; margin-top:18px}
+    .controls{
+      display:flex; gap:10px; flex-wrap:wrap;
+      align-items:center; justify-content:center;
+      margin-top:18px
+    }
     .btn{
-      appearance:none; border:1px solid var(--edge); color:var(--text); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.08));
-      padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer; transition:.2s transform, .2s filter, .2s background;
+      appearance:none;
+      border:1px solid var(--edge);
+      color:var(--text);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.08));
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s transform, .2s filter, .2s background;
     }
     .btn:hover{transform:translateY(-1px)}
     .btn:active{transform:translateY(0)}
     .hint{color:var(--muted); text-align:center; margin-top:6px; font-size:.92rem}
 
+    /* ===== СНЕГ (canvas) ===== */
+    #snow{
+      position:fixed; inset:0;
+      z-index:6;
+      pointer-events:none;
+      opacity:.9;
+    }
+
+    /* ===== сугробы ===== */
+    #snowbanks{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      height:190px;
+      z-index:8;
+      pointer-events:none;
+      background:linear-gradient(180deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,.16) 18%,
+        rgba(255,255,255,.34) 55%,
+        rgba(255,255,255,.50) 100%);
+      filter: drop-shadow(0 -14px 30px rgba(255,255,255,.06));
+    }
+    #snowbanks::before{
+      content:"";
+      position:absolute;
+      left:-50px; right:-50px;
+      top:-46px;
+      height:96px;
+      background:
+        radial-gradient(circle at 44px 78px, rgba(255,255,255,.62) 0 44px, transparent 46px);
+      background-size: 92px 92px;
+      background-repeat: repeat-x;
+      opacity:.95;
+      filter: blur(.2px);
+    }
+    #snowbanks::after{
+      content:"";
+      position:absolute;
+      left:-70px; right:-70px;
+      top:-26px;
+      height:84px;
+      background:
+        radial-gradient(circle at 56px 66px, rgba(255,255,255,.35) 0 36px, transparent 38px);
+      background-size: 118px 84px;
+      background-repeat: repeat-x;
+      opacity:.8;
+      filter: blur(.7px);
+    }
+
+    /* чуть “снега” на карточках */
+    .unit{
+      backdrop-filter: blur(6px);
+    }
+
+    /* ===== Ёлка (3D) по центру снизу ===== */
+    #treeWrap{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      width:260px;
+      height:290px;
+      z-index:10;
+      pointer-events:none;
+      filter: drop-shadow(0 18px 34px rgba(0,0,0,.48));
+    }
+
+    .treeStar{
+      position:absolute;
+      left:50%;
+      top:2px;
+      transform:translateX(-50%);
+      width:36px; height:36px;
+      background:radial-gradient(circle at 30% 30%, #fff6d6, var(--gold));
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 56%, 79% 92%, 50% 70%, 21% 92%, 32% 56%, 2% 35%, 39% 35%);
+      filter: drop-shadow(0 0 18px rgba(255,209,102,.45));
+      animation: starPulse 1.6s ease-in-out infinite alternate;
+    }
+    @keyframes starPulse{
+      from{ transform:translateX(-50%) scale(1); }
+      to{ transform:translateX(-50%) scale(1.06); }
+    }
+
+    .tree{
+      position:absolute;
+      left:50%;
+      bottom:0;
+      transform:translateX(-50%);
+      width:260px;
+      height:290px;
+    }
+
+    .layer{
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      width:240px;
+      height:150px;
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      border:1px solid rgba(0,0,0,.18);
+      box-shadow:
+        inset 0 14px 28px rgba(255,255,255,.10),
+        inset -28px -22px 40px rgba(0,0,0,.18);
+      overflow:hidden;
+    }
+    /* “иголки” + подсветка для 3D */
+    .layer::before{
+      content:"";
+      position:absolute; inset:-10px;
+      background:
+        repeating-linear-gradient(135deg, rgba(255,255,255,.06) 0 2px, transparent 2px 10px),
+        radial-gradient(circle at 28% 18%, rgba(255,255,255,.18), transparent 55%);
+      opacity:.9;
+      mix-blend-mode: screen;
+    }
+    .layer::after{
+      content:"";
+      position:absolute; inset:0;
+      background:linear-gradient(90deg, rgba(0,0,0,.0), rgba(0,0,0,.22));
+      opacity:.8;
+    }
+
+    .l1{ top:24px;  width:190px; height:120px; background:linear-gradient(180deg, #6af08f, #1e9b45); }
+    .l2{ top:82px;  width:220px; height:135px; background:linear-gradient(180deg, #58e981, #1b8e3e); }
+    .l3{ top:144px; width:250px; height:150px; background:linear-gradient(180deg, #49db73, #177f35); }
+
+    .trunk{
+      position:absolute;
+      left:50%;
+      bottom:28px;
+      transform:translateX(-50%);
+      width:52px;
+      height:64px;
+      border-radius:12px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.10), rgba(0,0,0,.18)),
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.16)),
+        #7a4b2a;
+      border:1px solid rgba(0,0,0,.25);
+      box-shadow: inset 0 10px 18px rgba(0,0,0,.18);
+    }
+
+    .snowBase{
+      position:absolute;
+      left:50%;
+      bottom:0;
+      transform:translateX(-50%);
+      width:240px;
+      height:64px;
+      border-radius:999px;
+      background:
+        radial-gradient(circle at 38% 30%, rgba(255,255,255,.92), rgba(255,255,255,.56) 55%, rgba(255,255,255,.22) 100%);
+      opacity:.9;
+      border:1px solid rgba(255,255,255,.22);
+      box-shadow: inset 0 10px 22px rgba(255,255,255,.15);
+    }
+
+    /* гирлянда на ёлке */
+    .garland{
+      position:absolute;
+      left:50%;
+      top:92px;
+      transform:translateX(-50%);
+      width:232px;
+      height:140px;
+      z-index:2;
+    }
+    .garland::before{
+      content:"";
+      position:absolute;
+      left:0; right:0;
+      top:18px;
+      height:110px;
+      border-bottom:2px solid rgba(255,255,255,.32);
+      border-radius:0 0 260px 260px;
+      filter: drop-shadow(0 0 12px rgba(255,255,255,.10));
+    }
+
+    .garland .bulb{
+      position:absolute;
+      left:var(--x);
+      top:var(--y);
+      width:12px; height:12px;
+      border-radius:50%;
+      background: var(--c);
+      box-shadow: 0 0 10px rgba(255,255,255,.20), 0 0 26px var(--c);
+      animation: bulbBlink 1.25s ease-in-out infinite alternate;
+      animation-delay: var(--d);
+    }
+    .garland .bulb::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:-6px;
+      transform:translateX(-50%);
+      width:7px; height:7px;
+      border-radius:3px;
+      background:rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    /* ===== салют ===== */
     #fx{position:fixed; inset:0; opacity:0; pointer-events:none; transition:opacity .35s ease; display:block; z-index:50;}
     #fx.show{opacity:1}
-    #fxBack{ position:fixed; inset:0; background:radial-gradient(1000px 500px at 50% 60%, rgba(255,255,255,.05), rgba(0,0,0,.7));
-      opacity:0; pointer-events:none; transition:opacity .35s ease; z-index:49;}
+    #fxBack{
+      position:fixed; inset:0;
+      background:radial-gradient(1000px 500px at 50% 60%, rgba(255,255,255,.05), rgba(0,0,0,.7));
+      opacity:0; pointer-events:none; transition:opacity .35s ease; z-index:49;
+    }
     #fxBack.show{opacity:1}
 
+    /* ===== оверлей картинок/текста ===== */
     #overlay{
       position:fixed; inset:0; display:grid; place-items:center;
       background:rgba(0,0,0,.6);
       opacity:0; pointer-events:none; transition:opacity .35s ease; z-index:60;
     }
     #overlay.show{ opacity:1; pointer-events:auto; }
-    #overlay img, #overlay #ovText{
-      display:none; max-width:min(90vw, 640px); max-height:80vh;
-    }
+    #overlay img, #overlay #ovText{ display:none; max-width:min(90vw, 640px); max-height:80vh; }
     #overlay .visible{ display:block; animation:pop .35s ease; }
-    #ovText{ font-size:clamp(3rem, 12vw, 8rem); font-weight:900; color:#fff; text-shadow:0 4px 30px rgba(0,0,0,.6); }
     @keyframes pop{ 0%{transform:scale(.9);opacity:.001} 100%{transform:scale(1);opacity:1} }
 
-    @media (max-width: 640px){ .timer{grid-template-columns:repeat(2, minmax(130px,1fr))} }
-  
-  /* усиленная стилизация текста "Ой" для лучшей видимости поверх салюта */
-  #ovText{ display:none; }
-  #overlay #ovText.visible{
-    display:block;
-    font-size:min(18vw, 180px);
-    line-height:1;
-    font-weight:900;
-    color:#fff;
-    text-transform:uppercase;
-    text-shadow:0 6px 20px rgba(0,0,0,.9), 0 0 40px rgba(255,255,255,.35);
-    -webkit-text-stroke:4px rgba(0,0,0,.45);
-    letter-spacing:.04em; padding:.1em .2em; border-radius:16px;
-  }
-</style>
+    /* усиленная стилизация "ой" */
+    #ovText{ display:none; }
+    #overlay #ovText.visible{
+      display:block;
+      font-size:min(18vw, 180px);
+      line-height:1;
+      font-weight:900;
+      color:#fff;
+      text-transform:uppercase;
+      text-shadow:0 6px 20px rgba(0,0,0,.9), 0 0 40px rgba(255,255,255,.35);
+      -webkit-text-stroke:4px rgba(0,0,0,.45);
+      letter-spacing:.04em;
+      padding:.1em .2em;
+      border-radius:16px;
+    }
+
+    @media (max-width: 640px){
+      .timer{grid-template-columns:repeat(2, minmax(130px,1fr))}
+      #treeWrap{ transform:translateX(-50%) scale(.86); bottom:14px; }
+      .wrap{ padding-bottom:320px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      #snow{ display:none; }
+      .bulb{ animation:none !important; }
+      .treeStar{ animation:none !important; }
+    }
+  </style>
 </head>
+
 <body>
+  <!-- верхняя гирлянда -->
+  <div id="topGarland" aria-hidden="true">
+    <svg viewBox="0 0 1000 120" preserveAspectRatio="none">
+      <path d="M0,70 C120,10 220,120 330,70 C440,20 560,120 670,70 C780,15 890,120 1000,70"
+            fill="none" stroke="rgba(255,255,255,.40)" stroke-width="3" />
+      <path d="M0,72 C120,12 220,122 330,72 C440,22 560,122 670,72 C780,17 890,122 1000,72"
+            fill="none" stroke="rgba(0,0,0,.22)" stroke-width="5" opacity=".55"/>
+    </svg>
+    <div class="bulbs">
+      <!-- лампочки по верхней гирлянде -->
+      <span class="bulb" style="left:6%;  --c:var(--gold); --d:0.0s"></span>
+      <span class="bulb" style="left:12%; --c:var(--ice);  --d:0.2s"></span>
+      <span class="bulb" style="left:18%; --c:var(--red);  --d:0.4s"></span>
+      <span class="bulb" style="left:24%; --c:var(--green);--d:0.1s"></span>
+      <span class="bulb" style="left:30%; --c:var(--gold); --d:0.3s"></span>
+      <span class="bulb" style="left:36%; --c:var(--ice);  --d:0.5s"></span>
+      <span class="bulb" style="left:42%; --c:var(--red);  --d:0.25s"></span>
+      <span class="bulb" style="left:48%; --c:var(--green);--d:0.45s"></span>
+      <span class="bulb" style="left:54%; --c:var(--gold); --d:0.15s"></span>
+      <span class="bulb" style="left:60%; --c:var(--ice);  --d:0.35s"></span>
+      <span class="bulb" style="left:66%; --c:var(--red);  --d:0.55s"></span>
+      <span class="bulb" style="left:72%; --c:var(--green);--d:0.05s"></span>
+      <span class="bulb" style="left:78%; --c:var(--gold); --d:0.28s"></span>
+      <span class="bulb" style="left:84%; --c:var(--ice);  --d:0.48s"></span>
+      <span class="bulb" style="left:90%; --c:var(--red);  --d:0.18s"></span>
+      <span class="bulb" style="left:96%; --c:var(--green);--d:0.38s"></span>
+    </div>
+  </div>
+
+  <!-- снег -->
+  <canvas id="snow" aria-hidden="true"></canvas>
+
   <header>
-    <h1>Время до <span id="targetLabel">26 декабря 2025</span></h1>
+    <h1>Время до <span id="targetLabel">27 декабря 2025</span></h1>
     <div class="sub"></div>
   </header>
 
@@ -129,9 +500,42 @@
     <div class="hint"></div>
   </div>
 
+  <!-- сугробы -->
+  <div id="snowbanks" aria-hidden="true"></div>
+
+  <!-- ёлочка -->
+  <div id="treeWrap" aria-hidden="true">
+    <div class="treeStar"></div>
+
+    <div class="tree">
+      <div class="layer l1"></div>
+      <div class="layer l2"></div>
+      <div class="layer l3"></div>
+
+      <div class="garland">
+        <span class="bulb" style="--x:18%;--y:34%;--c:var(--gold); --d:0.0s"></span>
+        <span class="bulb" style="--x:30%;--y:40%;--c:var(--ice);  --d:0.2s"></span>
+        <span class="bulb" style="--x:44%;--y:46%;--c:var(--red);  --d:0.4s"></span>
+        <span class="bulb" style="--x:58%;--y:50%;--c:var(--green);--d:0.1s"></span>
+        <span class="bulb" style="--x:72%;--y:46%;--c:var(--gold); --d:0.3s"></span>
+        <span class="bulb" style="--x:82%;--y:38%;--c:var(--ice);  --d:0.5s"></span>
+
+        <span class="bulb" style="--x:22%;--y:58%;--c:var(--red);  --d:0.15s"></span>
+        <span class="bulb" style="--x:38%;--y:64%;--c:var(--green);--d:0.35s"></span>
+        <span class="bulb" style="--x:54%;--y:68%;--c:var(--gold); --d:0.55s"></span>
+        <span class="bulb" style="--x:70%;--y:64%;--c:var(--ice);  --d:0.25s"></span>
+      </div>
+
+      <div class="trunk"></div>
+      <div class="snowBase"></div>
+    </div>
+  </div>
+
+  <!-- салют -->
   <div id="fxBack" aria-hidden="true"></div>
   <canvas id="fx" aria-hidden="true"></canvas>
 
+  <!-- оверлей финала -->
   <div id="overlay" aria-hidden="true">
     <img id="ovImg1" src="img1.jpg" alt="Первая картинка" />
     <div id="ovText">ой</div>
@@ -143,12 +547,17 @@
 
 <script>
 (function(){
-  // ====== Фиксируем цель на 1 ноября 2025 00:00 (локальное время браузера) ======
-  const TARGET = new Date(2025, 11, 27, 0, 0, 0, 0);
+  // ====== Цель: 27 декабря 2025 00:00 (локальное время браузера) ======
+  const TARGET = new Date(2025, 11, 27, 0, 0, 0, 0); // месяц 11 = декабрь
   const targetLabel = document.getElementById('targetLabel');
   targetLabel.textContent = '27 декабря 2025';
 
-  const dom = { d: document.getElementById('d'), h: document.getElementById('h'), m: document.getElementById('m'), s: document.getElementById('s') };
+  const dom = {
+    d: document.getElementById('d'),
+    h: document.getElementById('h'),
+    m: document.getElementById('m'),
+    s: document.getElementById('s')
+  };
   const pad2 = n => String(n).padStart(2,'0');
   let prevDays = null;
 
@@ -162,24 +571,18 @@
       endedFired = true;
       holdZeroUntil = now.getTime() + 4800;
 
-      // Немедленно показать нули
       dom.d.textContent = '00';
       dom.h.textContent = '00';
       dom.m.textContent = '00';
       dom.s.textContent = '00';
 
       endSequence();
-      // откладываем запуск на следующий тик, чтобы объект fireworks успел инициализироваться
       setTimeout(() => triggerFireworks(Infinity), 0);
     }
 
-    // После достижения цели таймер НЕ перезапускается
     let diff;
-    if (Date.now() < holdZeroUntil){
-      diff = 0;
-    } else {
-      diff = Math.max(0, TARGET - now);
-    }
+    if (Date.now() < holdZeroUntil) diff = 0;
+    else diff = Math.max(0, TARGET - now);
 
     const totalSec = Math.floor(diff / 1000);
     const days = Math.floor(totalSec / 86400);
@@ -217,7 +620,9 @@
     const osc    = ctx.createOscillator();
     const filter = ctx.createBiquadFilter();
     const gain   = ctx.createGain();
-    const panner = (ctx.createStereoPanner ? ctx.createStereoPanner() : null);
+    const panner = (ctx.createStereoPanner—allowsPanner()? ctx.createStereoPanner() : null);
+
+    function allowsPanner(){ return !!ctx.createStereoPanner; }
 
     const hissBuf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * duration), ctx.sampleRate);
     const hiss    = ctx.createBufferSource(); hiss.buffer = hissBuf;
@@ -229,9 +634,6 @@
       const t = i / hissBuf.sampleRate;
       ch[i] = (Math.random()*2 - 1) * (1 - t);
     }
-
-    const lfo     = ctx.createOscillator();
-    const lfoGain = ctx.createGain();
 
     gain.gain.setValueAtTime(0.0001, t0);
     gain.gain.exponentialRampToValueAtTime(0.22, t0 + 0.06);
@@ -254,9 +656,10 @@
     filter.frequency.setValueAtTime(S.fil0, t0);
     filter.frequency.exponentialRampToValueAtTime(S.fil1, t0 + duration * 0.9);
 
-    lfo.frequency.setValueAtTime(S.vibHz, t0);
+    const lfo = ctx.createOscillator();
     const lfoGainNode = ctx.createGain();
-    lfoGainNode.gain.setValueAtTime(18, t0);
+    lfo.frequency.setValueAtTime(S.vibHz, t0);
+    lfoGainNode.gain.setValueAtTime(S.vibAmtHz, t0);
     lfo.connect(lfoGainNode).connect(osc.frequency);
     lfo.start(t0); lfo.stop(t0 + duration);
 
@@ -267,7 +670,7 @@
 
     if (panner) panner.pan.setValueAtTime((Math.random()*2 - 1) * 0.25, t0);
 
-    osc.start(t0);    osc.stop(t0 + duration);
+    osc.start(t0); osc.stop(t0 + duration);
   }
 
   function playExplosion(){
@@ -316,20 +719,21 @@
       data[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 2) * (Math.random() > 0.8 ? 1.0 : 0.6);
     }
     const src = ctx.createBufferSource(); src.buffer = buffer;
-    const g = ctx.createGain(); g.gain.setValueAtTime(0.25, atTime); g.gain.exponentialRampToValueAtTime(0.001, atTime + dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.25, atTime);
+    g.gain.exponentialRampToValueAtTime(0.001, atTime + dur);
     src.connect(g).connect(ctx.destination);
     src.start(atTime);
   }
 
   // ====== Музыка финального салюта (HTMLAudio) ======
   const finalSong = document.getElementById('finalSong');
-  finalSong.volume = 0.85; // при желании поменяйте громкость (0..1)
+  finalSong.volume = 0.85;
   let songPrimed = false;
 
   function primeFinalSong(){
     if (songPrimed) return;
     try {
-      // Разрешаем дальнейшее программное воспроизведение — вызываем play() в ответ на клик
       finalSong.muted = true;
       finalSong.play().then(() => {
         finalSong.pause();
@@ -340,7 +744,7 @@
     } catch(e) {}
   }
   function playFinalSong(){
-    if (!audioEnabled) return; // подчиняемся общей кнопке звука
+    if (!audioEnabled) return;
     try { finalSong.currentTime = 0; finalSong.play().catch(() => {}); } catch(e) {}
   }
   function stopFinalSong(){
@@ -354,7 +758,7 @@
   const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
   function resizeCanvas(){
-    const { innerWidth:w, innerHeight:h } = window;
+    const w = window.innerWidth, h = window.innerHeight;
     canvas.width = Math.floor(w * DPR);
     canvas.height = Math.floor(h * DPR);
     canvas.style.width = w + 'px';
@@ -369,9 +773,14 @@
 
   class Particle{
     constructor(x, y, angle, speed, color){
-      this.x=x; this.y=y; this.vx=Math.cos(angle)*speed; this.vy=Math.sin(angle)*speed;
-      this.alpha=1; this.life = 0.9 + Math.random()*0.6;
-      this.color=color; this.size=1.4 + Math.random()*2.2; this.spark = Math.random() < 0.2;
+      this.x=x; this.y=y;
+      this.vx=Math.cos(angle)*speed;
+      this.vy=Math.sin(angle)*speed;
+      this.alpha=1;
+      this.life = 0.9 + Math.random()*0.6;
+      this.color=color;
+      this.size=1.4 + Math.random()*2.2;
+      this.spark = Math.random() < 0.2;
     }
     update(dt){
       this.vy += GRAVITY * dt;
@@ -411,12 +820,15 @@
       if (this.exploded) return;
       this.vy += 120 * dt;
       this.x += this.vx * dt; this.y += this.vy * dt;
-      this.trail.push({x:this.x, y:this.y, a:1}); if (this.trail.length > 12) this.trail.shift();
+      this.trail.push({x:this.x, y:this.y, a:1});
+      if (this.trail.length > 12) this.trail.shift();
       if (!this.swishPlayed){ playWhistle(0.9); this.swishPlayed = true; }
       if (this.vy > -40 || this.y <= this.targetY){ this.explode(); }
     }
     explode(){
-      if (this.exploded) return; this.exploded = true;
+      if (this.exploded) return;
+      this.exploded = true;
+
       const count = 120 + Math.floor(Math.random()*80);
       for (let i=0;i<count;i++){
         const angle = Math.random()*Math.PI*2;
@@ -437,23 +849,33 @@
       ctx.globalAlpha = .7;
       ctx.beginPath();
       for (let i=0;i<this.trail.length;i++){
-        const t = this.trail[i]; i===0 ? ctx.moveTo(t.x, t.y) : ctx.lineTo(t.x, t.y);
+        const t = this.trail[i];
+        i===0 ? ctx.moveTo(t.x, t.y) : ctx.lineTo(t.x, t.y);
       }
-      ctx.stroke(); ctx.globalAlpha = 1;
-      ctx.beginPath(); ctx.arc(this.x, this.y, 2.2, 0, Math.PI*2); ctx.fillStyle=this.color; ctx.fill();
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 2.2, 0, Math.PI*2);
+      ctx.fillStyle=this.color;
+      ctx.fill();
     }
   }
 
   const fireworks = {
     running:false,
-    rockets:[], particles:[], last:0, endAt:0,
+    rockets:[],
+    particles:[],
+    last:0,
+    endAt:0,
     _failsafe: null,
     start(durationMs=10000){
       if (this.running) this.stop();
       this.running = true;
-      back.classList.add('show'); canvas.classList.add('show');
+      back.classList.add('show');
+      canvas.classList.add('show');
       this.last = performance.now();
       this.endAt = (Number.isFinite(durationMs) ? this.last + durationMs : Infinity);
+
       if (Number.isFinite(durationMs)) {
         this._failsafe = setTimeout(() => { if (this.running) this.stop(); }, durationMs + 2000);
       } else {
@@ -464,19 +886,25 @@
     stop(){
       this.running = false;
       if (this._failsafe){ clearTimeout(this._failsafe); this._failsafe = null; }
-      this.rockets.length = 0; this.particles.length = 0;
-      back.classList.remove('show'); canvas.classList.remove('show');
-      ctx2d.clearRect(0,0,canvas.width,canvas.height);
+      this.rockets.length = 0;
+      this.particles.length = 0;
+      back.classList.remove('show');
+      canvas.classList.remove('show');
+      ctx2d.clearRect(0,0,window.innerWidth, window.innerHeight);
     },
-    spawnRocket(){ this.rockets.push(new Rocket(canvas.width, canvas.height)); },
+    spawnRocket(){
+      this.rockets.push(new Rocket(window.innerWidth, window.innerHeight));
+    },
     loop(){
       if (!this.running) return;
       const now = performance.now();
       const dt = Math.min((now - this.last) / 1000, 0.035);
       this.last = now;
 
+      const cw = window.innerWidth, ch = window.innerHeight;
+
       ctx2d.fillStyle = 'rgba(0,0,0,.20)';
-      ctx2d.fillRect(0,0,canvas.width,canvas.height);
+      ctx2d.fillRect(0,0,cw,ch);
 
       if (now < this.endAt) {
         if (Math.random() < 0.14) this.spawnRocket();
@@ -488,7 +916,7 @@
       ctx2d.globalCompositeOperation = 'lighter';
       for (const p of this.particles) { p.update(dt); p.draw(ctx2d); }
       ctx2d.globalCompositeOperation = 'source-over';
-      this.particles = this.particles.filter(p => p.alpha > 0 && p.y < canvas.height + 80);
+      this.particles = this.particles.filter(p => p.alpha > 0 && p.y < ch + 80);
 
       if (now >= this.endAt && this.rockets.length === 0 && this.particles.length === 0) {
         this.stop(); return;
@@ -504,11 +932,11 @@
     if (!audioCtx) ensureAudio();
     if (audioCtx.state === 'suspended') await audioCtx.resume();
     audioEnabled = !audioEnabled;
+
     soundBtn.setAttribute('aria-pressed', String(audioEnabled));
     soundBtn.textContent = audioEnabled ? '🔊 Звук вкл.' : '🔇 Звук выкл.';
 
     if (audioEnabled){
-      // Разрешим дальнейший программный старт музыки и включим её, если финал уже идёт
       primeFinalSong();
       if (endedFired) playFinalSong();
     } else {
@@ -532,22 +960,80 @@
 
     overlay.classList.add('show');
 
-    // ▶️ Стартуем музыкальную дорожку параллельно финальному салюту
     if (audioEnabled) playFinalSong();
 
-    // 1) первая картинка
     showOnly(ovImg1);
     setTimeout(() => { showOnly(null); }, 1400);
 
-    // 2) "ой"
     setTimeout(() => { showOnly(ovText); }, 1600);
     setTimeout(() => { showOnly(null); }, 3000);
 
-    // 3) вторая картинка
     setTimeout(() => { showOnly(ovImg2); }, 3200);
+  }
 
-    // 4) оставляем вторую картинку навсегда — оверлей не закрываем
-}
+  // ====== СНЕГ (отдельный canvas, всегда включён) ======
+  const snow = document.getElementById('snow');
+  const sctx = snow.getContext('2d');
+  const SDPR = Math.min(window.devicePixelRatio || 1, 2);
+
+  let flakes = [];
+  let sLast = performance.now();
+
+  function resizeSnow(){
+    const w = window.innerWidth, h = window.innerHeight;
+    snow.width = Math.floor(w * SDPR);
+    snow.height = Math.floor(h * SDPR);
+    snow.style.width = w + 'px';
+    snow.style.height = h + 'px';
+    sctx.setTransform(SDPR, 0, 0, SDPR, 0, 0);
+    initFlakes();
+  }
+
+  function initFlakes(){
+    const w = window.innerWidth, h = window.innerHeight;
+    const count = Math.round(Math.min(200, Math.max(80, w / 8)));
+    flakes = Array.from({ length: count }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: 0.8 + Math.random() * 2.6,
+      v: 18 + Math.random() * 70,
+      drift: (Math.random() * 2 - 1) * 22,
+      wobble: Math.random() * Math.PI * 2,
+      a: 0.22 + Math.random() * 0.65
+    }));
+  }
+
+  function snowLoop(now){
+    const w = window.innerWidth, h = window.innerHeight;
+    const dt = Math.min((now - sLast) / 1000, 0.033);
+    sLast = now;
+
+    sctx.clearRect(0, 0, w, h);
+
+    for (const f of flakes){
+      f.wobble += dt * (0.9 + Math.random() * 0.2);
+      f.x += (f.drift + Math.sin(f.wobble) * 12) * dt;
+      f.y += f.v * dt;
+
+      if (f.y > h + 12){ f.y = -12; f.x = Math.random() * w; }
+      if (f.x < -30) f.x = w + 30;
+      if (f.x > w + 30) f.x = -30;
+
+      sctx.globalAlpha = f.a;
+      sctx.beginPath();
+      sctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      sctx.fillStyle = '#ffffff';
+      sctx.fill();
+    }
+    sctx.globalAlpha = 1;
+
+    requestAnimationFrame(snowLoop);
+  }
+
+  window.addEventListener('resize', resizeSnow, { passive: true });
+  resizeSnow();
+  requestAnimationFrame(snowLoop);
+
 })();
 </script>
 </body>
