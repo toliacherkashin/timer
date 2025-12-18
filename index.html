@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>До 27 декабря 2025</title>
+    <title>Таймер до приезда моей любимой девочки</title>
 
     <style>
         :root {
@@ -558,11 +558,140 @@
                 display: none;
             }
         }
-    </style>
+    
+        /* ===== Day-change WOW effects ===== */
+        #fx{
+            position: fixed;
+            inset: 0;
+            z-index: 19; /* above snow, below garland (20) */
+            pointer-events: none;
+        }
+
+        .day-pulse{
+            animation: dayPulse .65s cubic-bezier(.2,.9,.2,1) 1;
+        }
+        @keyframes dayPulse{
+            0%   { transform: translateY(0) scale(1);   filter: brightness(1); }
+            18%  { transform: translateY(-3px) scale(1.015); filter: brightness(1.22); }
+            55%  { transform: translateY(1px)  scale(1.006); filter: brightness(1.10); }
+            100% { transform: translateY(0) scale(1);   filter: brightness(1); }
+        }
+
+        .toast{
+            position: fixed;
+            left: 50%;
+            top: 138px;
+            transform: translateX(-50%);
+            z-index: 40;
+            padding: 10px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,.16);
+            background: linear-gradient(180deg, rgba(14,24,46,.78), rgba(10,18,36,.58));
+            box-shadow: 0 18px 50px rgba(0,0,0,.45);
+            backdrop-filter: blur(12px);
+            color: rgba(234,242,255,.96);
+            font-size: 13px;
+            letter-spacing: .2px;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .toast.show{
+            animation: toastInOut 1.9s cubic-bezier(.2,.9,.2,1) 1;
+        }
+        @keyframes toastInOut{
+            0%{ opacity: 0; transform: translateX(-50%) translateY(-10px) scale(.98); filter: blur(.4px); }
+            16%{ opacity: 1; transform: translateX(-50%) translateY(0) scale(1); filter: blur(0); }
+            84%{ opacity: 1; }
+            100%{ opacity: 0; transform: translateX(-50%) translateY(-10px) scale(.985); filter: blur(.4px); }
+        }
+
+        /* Party mode: briefly speed up garlands + extra glow */
+        body.party .garland{
+            filter: drop-shadow(0 14px 30px rgba(0,0,0,.35)) drop-shadow(0 0 20px rgba(112,184,255,.18));
+        }
+        body.party .garland .wire-shine{ opacity: .95; }
+        body.party .garland .g-bulbPulse{
+            animation-duration: 1.0s !important;
+            filter: drop-shadow(0 0 14px var(--glow, rgba(112,184,255,.45)));
+        }
+
+        .tree-garland.tg-fast .tg-bulb{
+            animation-duration: .85s;
+            filter: drop-shadow(0 0 18px var(--glow));
+        }
+
+        .star.sparkle{
+            animation: starSpark 1.1s ease-out 1;
+        }
+        @keyframes starSpark{
+            0%{ transform: translateX(-50%) scale(1); filter: drop-shadow(0 0 18px rgba(255,215,120,.55)) drop-shadow(0 0 34px rgba(255,140,0,.18)); }
+            25%{ transform: translateX(-50%) scale(1.18) rotate(-2deg); filter: drop-shadow(0 0 28px rgba(255,240,180,.78)) drop-shadow(0 0 60px rgba(255,180,60,.24)); }
+            100%{ transform: translateX(-50%) scale(1); }
+        }
+
+        /* Aurora sweep (day-change) */
+        .aurora{
+            position: fixed;
+            inset: -20% -10%;
+            z-index: 12;
+            pointer-events: none;
+            opacity: 0;
+            filter: blur(18px) saturate(1.15);
+            transform: translate3d(0,0,0);
+            background:
+                radial-gradient(40% 35% at 20% 35%, rgba(120,255,190,.30), transparent 60%),
+                radial-gradient(40% 35% at 55% 30%, rgba(120,180,255,.28), transparent 62%),
+                radial-gradient(45% 40% at 80% 42%, rgba(255,140,200,.22), transparent 62%);
+            mix-blend-mode: screen;
+        }
+        .aurora.on{
+            animation: auroraSweep 1.7s cubic-bezier(.2,.9,.2,1) 1;
+        }
+        @keyframes auroraSweep{
+            0%{ opacity: 0; transform: translateY(-6%) translateX(-3%) scale(1.02) skewX(-2deg); }
+            18%{ opacity: .95; }
+            55%{ opacity: .55; transform: translateY(2%) translateX(2%) scale(1.06) skewX(2deg); }
+            100%{ opacity: 0; transform: translateY(6%) translateX(6%) scale(1.08) skewX(3deg); }
+        }
+
+        @media (max-width: 640px){
+            .toast{ top: 120px; font-size: 12.5px; }
+        }
+
+    
+/* sound toggle */
+.soundToggle{
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 40;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(10,18,36,.55);
+  box-shadow: 0 14px 34px rgba(0,0,0,.35);
+  backdrop-filter: blur(10px);
+  color: rgba(234,242,255,.95);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .15s ease, filter .2s ease;
+}
+.soundToggle:hover{ transform: translateY(-1px); filter: brightness(1.08); }
+.soundToggle:active{ transform: translateY(0); filter: brightness(.98); }
+.soundToggle:focus-visible{ outline: 2px solid rgba(112,184,255,.6); outline-offset: 3px; }
+
+</style>
 </head>
 
 <body>
     <canvas id="snow" aria-hidden="true"></canvas>
+    <canvas id="fx" aria-hidden="true"></canvas>
+    <div class="aurora" aria-hidden="true"></div>
     <div class="stars" aria-hidden="true"></div>
 
     <!-- Garland -->
@@ -576,9 +705,10 @@
         </svg>
     </div>
 
-    <main class="wrap">
+        <button id="soundToggle" class="soundToggle" type="button" aria-label="Звук" aria-pressed="true" title="Звук">🔊</button>
+<main class="wrap">
         <section class="card" role="group" aria-label="Таймер обратного отсчёта до приезда моей красотки">
-            <h1>До 27 декабря 2025</h1>
+            <h1>Таймер до приезда моей любимой девочки</h1>
             <p class="sub"><br></p>
 
             <div class="grid" aria-live="polite">
@@ -765,6 +895,12 @@
 
         function pad2(n) { return String(n).padStart(2, '0'); }
 
+        let lastDays = null;
+
+        function emitDayChange(days) {
+            document.dispatchEvent(new CustomEvent('daychange', { detail: { days } }));
+        }
+
         function tick() {
             const now = new Date();
             let diff = target - now;
@@ -784,6 +920,12 @@
             const mins = Math.floor((totalSeconds % 3600) / 60);
             const secs = totalSeconds % 60;
 
+
+            if (lastDays === null) lastDays = days;
+            if (days !== lastDays) {
+                lastDays = days;
+                emitDayChange(days);
+            }
             elD.textContent = days;
             elH.textContent = pad2(hours);
             elM.textContent = pad2(mins);
@@ -897,6 +1039,267 @@
     }
 })();
 
+
+// ----- FX (confetti / sparkles) -----
+        (function fxLayer() {
+            const c = document.getElementById('fx');
+            if (!c) return;
+            const ctx = c.getContext('2d');
+
+            let W = 0, H = 0, dpr = 1;
+            function resize() {
+                dpr = Math.max(1, window.devicePixelRatio || 1);
+                W = c.width = Math.floor(window.innerWidth * dpr);
+                H = c.height = Math.floor(window.innerHeight * dpr);
+                c.style.width = window.innerWidth + "px";
+                c.style.height = window.innerHeight + "px";
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+            window.addEventListener('resize', resize, { passive: true });
+            resize();
+
+            const parts = [];
+
+            const rockets = [];
+            const sparks = [];
+
+            function fwBurst(x, y, count = 84, colOverride = null) {
+                const now = performance.now();
+                const c = colOverride || palette[(Math.random() * palette.length) | 0];
+                // c is [r,g,b]
+                for (let i = 0; i < count; i++) {
+                    const ang = rand(0, Math.PI * 2);
+                    const sp = rand(1.8, 7.8);
+                    sparks.push({
+                        x, y,
+                        vx: Math.cos(ang) * sp,
+                        vy: Math.sin(ang) * sp,
+                        g: 0.07 + Math.random() * 0.09,
+                        drag: 0.985,
+                        size: rand(1.2, 3.2),
+                        life: rand(920, 1650),
+                        born: now,
+                        a: 1,
+                        col: c,
+                        tw: rand(0.8, 1.6) // twinkle
+                    });
+                }
+            }
+
+            function launchFirework(side = 'left') {
+                const now = performance.now();
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+
+                const fromLeft = side === 'left';
+                const x0 = fromLeft ? rand(24, 64) : w - rand(24, 64);
+                const y0 = h - rand(110, 190); // from snowbanks area
+                const vx0 = fromLeft ? rand(2.2, 4.2) : -rand(2.2, 4.2);
+                const vy0 = -rand(8.8, 11.2);
+
+                const apexY = rand(140, 300);
+                const col = palette[(Math.random() * palette.length) | 0];
+
+                rockets.push({
+                    x: x0, y: y0,
+                    px: x0, py: y0,
+                    vx: vx0, vy: vy0,
+                    g: 0.12,
+                    drag: 0.995,
+                    born: now,
+                    life: rand(900, 1500),
+                    apexY,
+                    col
+                });
+            }
+
+            function fireworksPair() {
+                launchFirework('left');
+                launchFirework('right');
+            }
+
+            function fireworksShow(durationMs = 6000) {
+                // 3 waves across ~6 seconds
+                const times = [120, 2280, 4440];
+                times.forEach((t) => {
+                    setTimeout(() => fireworksPair(), t);
+                });
+            }
+            const palette = [
+                [120,180,255],[120,255,190],[255,220,120],[255,140,200],[180,120,255],[255,160,120]
+            ];
+            const rand = (a,b)=> a + Math.random()*(b-a);
+
+            function burst(x, y, count = 110) {
+                const now = performance.now();
+                for (let i = 0; i < count; i++) {
+                    const c = palette[(Math.random() * palette.length) | 0];
+                    const ang = rand(-Math.PI, 0); // shoot upward-ish
+                    const sp  = rand(2.8, 8.8);
+                    parts.push({
+                        x, y,
+                        vx: Math.cos(ang) * sp + rand(-1.0, 1.0),
+                        vy: Math.sin(ang) * sp + rand(-1.2, 0.8),
+                        g: 0.18 + Math.random() * 0.22,
+                        drag: 0.985,
+                        size: rand(3, 8),
+                        rot: rand(0, Math.PI * 2),
+                        vr: rand(-0.22, 0.22),
+                        life: rand(900, 1550),
+                        born: now,
+                        a: 1,
+                        col: `rgba(${c[0]},${c[1]},${c[2]},`
+                    });
+                }
+            }
+
+            function starburst(x, y, count = 28) {
+                const now = performance.now();
+                for (let i = 0; i < count; i++) {
+                    const c = palette[(Math.random() * palette.length) | 0];
+                    const ang = rand(0, Math.PI * 2);
+                    const sp  = rand(1.2, 5.0);
+                    parts.push({
+                        x, y,
+                        vx: Math.cos(ang) * sp,
+                        vy: Math.sin(ang) * sp,
+                        g: 0.05,
+                        drag: 0.97,
+                        size: rand(1.5, 3.6),
+                        rot: rand(0, Math.PI * 2),
+                        vr: rand(-0.45, 0.45),
+                        life: rand(520, 900),
+                        born: now,
+                        a: 1,
+                        col: `rgba(${c[0]},${c[1]},${c[2]},`
+                    });
+                }
+            }
+
+                        function step(t) {
+                ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+                // ---- Fireworks rockets ----
+                ctx.save();
+                ctx.globalCompositeOperation = 'lighter';
+
+                for (let i = rockets.length - 1; i >= 0; i--) {
+                    const r = rockets[i];
+                    const age = t - r.born;
+                    if (age > r.life) { rockets.splice(i, 1); continue; }
+
+                    r.px = r.x; r.py = r.y;
+                    r.vx *= r.drag;
+                    r.vy = (r.vy * r.drag) + r.g;
+                    r.x += r.vx;
+                    r.y += r.vy;
+
+                    // trail
+                    const a = Math.max(0, Math.min(1, 1 - (age / r.life)));
+                    ctx.lineWidth = 2.0;
+                    ctx.strokeStyle = `rgba(${r.col[0]},${r.col[1]},${r.col[2]},${(0.18 + 0.42 * a).toFixed(3)})`;
+                    ctx.beginPath();
+                    ctx.moveTo(r.px, r.py);
+                    ctx.lineTo(r.x, r.y);
+                    ctx.stroke();
+
+                    // small glowing head
+                    ctx.shadowBlur = 18;
+                    ctx.shadowColor = `rgba(${r.col[0]},${r.col[1]},${r.col[2]},.85)`;
+                    ctx.fillStyle = `rgba(${r.col[0]},${r.col[1]},${r.col[2]},${(0.45 + 0.45 * a).toFixed(3)})`;
+                    ctx.beginPath();
+                    ctx.arc(r.x, r.y, 2.2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+
+                    // explode near apex
+                    if (r.y <= r.apexY || r.vy > -0.6) {
+                        fwBurst(r.x, r.y, 88, r.col);
+                        fwBurst(r.x + rand(-8, 8), r.y + rand(-6, 6), 52, r.col);
+                        rockets.splice(i, 1);
+                    }
+                }
+
+                // ---- Fireworks sparks ----
+                for (let i = sparks.length - 1; i >= 0; i--) {
+                    const p = sparks[i];
+                    const age = t - p.born;
+                    if (age > p.life) { sparks.splice(i, 1); continue; }
+
+                    const k = 1 - (age / p.life);
+                    p.a = Math.max(0, Math.min(1, k));
+                    p.vx *= p.drag;
+                    p.vy = (p.vy * p.drag) + p.g;
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    // twinkle
+                    const tw = 0.65 + 0.35 * Math.sin((age * 0.018) + p.tw);
+
+                    ctx.shadowBlur = 16;
+                    ctx.shadowColor = `rgba(${p.col[0]},${p.col[1]},${p.col[2]},.85)`;
+                    ctx.fillStyle = `rgba(${p.col[0]},${p.col[1]},${p.col[2]},${(0.10 + 0.78 * p.a * tw).toFixed(3)})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // tiny streak
+                    ctx.shadowBlur = 0;
+                    ctx.globalAlpha = 0.22 * p.a;
+                    ctx.strokeStyle = `rgba(255,255,255,1)`;
+                    ctx.lineWidth = 1.0;
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p.x - p.vx * 0.8, p.y - p.vy * 0.8);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+
+                ctx.restore();
+                ctx.globalCompositeOperation = 'source-over';
+
+                // ---- Confetti parts ----
+                for (let i = parts.length - 1; i >= 0; i--) {
+                    const p = parts[i];
+                    const age = t - p.born;
+                    if (age > p.life) { parts.splice(i, 1); continue; }
+
+                    const k = 1 - (age / p.life);
+                    p.a = Math.max(0, Math.min(1, k));
+                    p.vx *= p.drag;
+                    p.vy = (p.vy * p.drag) + p.g;
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.rot += p.vr;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rot);
+
+                    const s = p.size;
+                    ctx.fillStyle = p.col + (0.10 + 0.90 * p.a).toFixed(3) + ")";
+                    ctx.fillRect(-s * 0.5, -s * 0.5, s, s * 0.7);
+
+                    // tiny highlight
+                    ctx.globalAlpha = 0.25 * p.a;
+                    ctx.fillStyle = "rgba(255,255,255,1)";
+                    ctx.fillRect(-s * 0.15, -s * 0.35, s * 0.22, s * 0.22);
+
+                    ctx.restore();
+                }
+
+                requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+
+            window.__fxBurst = burst;
+            window.__fxStarburst = starburst;
+            window.__fxFireworksShow = fireworksShow;
+            window.__fxFireworksPair = fireworksPair;
+            window.__fxLaunchFirework = launchFirework;
+        })();
+
+
 // ----- Snow (canvas) -----
         (function snow() {
             const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -919,7 +1322,49 @@
 
             const flakes = [];
             const maxFlakes = Math.min(220, Math.floor(window.innerWidth * 0.18));
-            function rand(min, max) { return min + Math.random() * (max - min); }
+            
+            let gustUntil = 0;
+            let gustWind = 0;
+            let gustStrength = 0;
+            let gustDur = 2200;
+
+            function snowGust(ms = 2200, strength = 1.2) {
+                const now = performance.now();
+                const newUntil = now + ms;
+
+                // if we are extending the gust, remember its real duration
+                if (newUntil > gustUntil) {
+                    gustUntil = newUntil;
+                    gustDur = ms;
+                } else {
+                    gustUntil = Math.max(gustUntil, newUntil);
+                    gustDur = Math.max(gustDur, ms);
+                }
+
+                gustStrength = Math.max(gustStrength, strength);
+                gustWind = (Math.random() < 0.5 ? -1 : 1) * (1.2 + Math.random() * 1.8) * gustStrength;
+            }
+
+            function snowBurst(extra = 140) {
+                const now = performance.now();
+                for (let i = 0; i < extra; i++) {
+                    flakes.push({
+                        x: rand(0, window.innerWidth),
+                        y: rand(-120, -10),
+                        r: rand(1.0, 3.4),
+                        v: rand(1.0, 2.6),
+                        drift: rand(-0.8, 0.8),
+                        a: rand(0.55, 0.95),
+                        temp: true,
+                        born: now,
+                        life: rand(900, 1600)
+                    });
+                }
+            }
+
+            window.__snowGust = snowGust;
+            window.__snowBurst = snowBurst;
+function rand(min, max) { return min + Math.random() * (max - min); }
 
             for (let i = 0; i < maxFlakes; i++) {
                 flakes.push({
@@ -935,9 +1380,18 @@
             function step() {
                 ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
-                for (const f of flakes) {
-                    f.y += f.v;
-                    f.x += f.drift + Math.sin((f.y + f.x) * 0.003) * 0.35;
+                const nowT = performance.now();
+                const gRaw = gustUntil > nowT ? (gustUntil - nowT) / gustDur : 0;
+                const g = Math.max(0, Math.min(1, gRaw));
+                const speedMult = 1 + 1.9 * g;
+                const wind = gustWind * g;
+
+                for (let i = flakes.length - 1; i >= 0; i--) {
+                    const f = flakes[i];
+                    if (f.temp && (nowT - f.born) > f.life) { flakes.splice(i, 1); continue; }
+
+                    f.y += f.v * speedMult;
+                    f.x += (f.drift + wind) + Math.sin((f.y + f.x) * 0.003) * (0.35 + 0.55 * g) + Math.sin(nowT * 0.003 + f.y * 0.01) * 0.25 * g;
 
                     if (f.y > window.innerHeight + 12) {
                         f.y = rand(-80, -10);
@@ -956,6 +1410,522 @@
             }
             requestAnimationFrame(step);
         })();
+    
+// ----- Day-change WOW -----
+        (function dayChangeEffects(){
+            const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            const card = document.querySelector('.card');
+            const toast = document.getElementById('toast');
+            const aurora = document.querySelector('.aurora');
+            const treeGarland = document.querySelector('.tree-garland');
+            const star = document.querySelector('.tree .star, .star');
+            const topGarland = document.querySelector('.garland');
+            const soundBtn = document.getElementById('soundToggle');
+
+            // ----- Tiny SFX (WebAudio) -----
+            let sfxEnabled = (localStorage.getItem('sfxEnabled') ?? '1') === '1';
+            let audioCtx = null;
+            let master = null;
+
+            function updateSoundBtn(){
+                if (!soundBtn) return;
+                soundBtn.textContent = sfxEnabled ? '🔊' : '🔇';
+                soundBtn.setAttribute('aria-pressed', sfxEnabled ? 'true' : 'false');
+                soundBtn.title = sfxEnabled ? 'Звук: Вкл' : 'Звук: Выкл';
+            }
+
+            function ensureAudio(){
+                if (!sfxEnabled) return null;
+                if (!audioCtx){
+                    const AC = window.AudioContext || window.webkitAudioContext;
+                    if (!AC) return null;
+                    audioCtx = new AC();
+                    master = audioCtx.createGain();
+                    master.gain.value = 0.22; // overall volume
+                    master.connect(audioCtx.destination);
+                }
+                if (audioCtx.state === 'suspended'){
+                    audioCtx.resume().catch(()=>{});
+                }
+                return audioCtx;
+            }
+
+            function envGain(g, t0, a=0.005, d=0.12, s=0.0, r=0.12, peak=1.0){
+                g.gain.cancelScheduledValues(t0);
+                g.gain.setValueAtTime(0.0001, t0);
+                g.gain.exponentialRampToValueAtTime(Math.max(0.0001, peak), t0 + a);
+                g.gain.exponentialRampToValueAtTime(Math.max(0.0001, s + 0.0001), t0 + a + d);
+                g.gain.exponentialRampToValueAtTime(0.0001, t0 + a + d + r);
+            }
+
+            function sfxChime(){
+                const ctx = ensureAudio();
+                if (!ctx || !master) return;
+
+                const t0 = ctx.currentTime + 0.005;
+                const notes = [784, 988, 1319]; // G5, B5, E6-ish
+                notes.forEach((f, i)=>{
+                    const o = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    o.type = 'triangle';
+                    o.frequency.setValueAtTime(f, t0 + i*0.08);
+                    o.connect(g);
+
+                    // gentle shimmer
+                    const lp = ctx.createBiquadFilter();
+                    lp.type = 'lowpass';
+                    lp.frequency.setValueAtTime(6000, t0);
+                    g.connect(lp);
+                    lp.connect(master);
+
+                    envGain(g, t0 + i*0.08, 0.01, 0.10, 0.0001, 0.22, 0.75);
+                    o.start(t0 + i*0.08);
+                    o.stop(t0 + i*0.08 + 0.45);
+                });
+            }
+
+            function sfxPop(){
+                const ctx = ensureAudio();
+                if (!ctx || !master) return;
+
+                const t0 = ctx.currentTime + 0.005;
+
+                // click
+                const o = ctx.createOscillator();
+                o.type = 'sine';
+                o.frequency.setValueAtTime(220, t0);
+                o.frequency.exponentialRampToValueAtTime(880, t0 + 0.03);
+
+                const g = ctx.createGain();
+                o.connect(g);
+                envGain(g, t0, 0.002, 0.04, 0.0001, 0.06, 0.55);
+                g.connect(master);
+                o.start(t0);
+                o.stop(t0 + 0.12);
+
+                // tiny noise burst
+                const dur = 0.08;
+                const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate*dur), ctx.sampleRate);
+                const data = buf.getChannelData(0);
+                for (let i = 0; i < data.length; i++){
+                    data[i] = (Math.random()*2 - 1) * Math.pow(1 - i/data.length, 2);
+                }
+                const n = ctx.createBufferSource();
+                n.buffer = buf;
+
+                const hp = ctx.createBiquadFilter();
+                hp.type = 'highpass';
+                hp.frequency.setValueAtTime(1200, t0);
+
+                const gn = ctx.createGain();
+                n.connect(hp);
+                hp.connect(gn);
+                envGain(gn, t0, 0.001, 0.03, 0.0001, 0.05, 0.35);
+                gn.connect(master);
+
+                n.start(t0);
+                n.stop(t0 + dur);
+            }
+
+
+            // party poppers: crisp multi-pop + crackle
+            function sfxPoppers(strength=1.0){
+                const ctx = ensureAudio();
+                if (!ctx || !master) return;
+
+                const t0 = ctx.currentTime + 0.006;
+                const pops = 3;
+                const rand = (a,b)=> a + Math.random()*(b-a);
+
+                for (let i = 0; i < pops; i++){
+                    const tt = t0 + i * 0.115 + rand(-0.01, 0.01);
+
+                    // low transient "pop"
+                    const o = ctx.createOscillator();
+                    o.type = 'square';
+                    o.frequency.setValueAtTime(rand(160, 230), tt);
+                    o.frequency.exponentialRampToValueAtTime(rand(55, 75), tt + 0.05);
+
+                    const g = ctx.createGain();
+                    o.connect(g);
+                    envGain(g, tt, 0.001, 0.028, 0.0001, 0.08, 0.28 * strength);
+                    g.connect(master);
+                    o.start(tt);
+                    o.stop(tt + 0.16);
+
+                    // crackle burst (noise with spikes)
+                    const dur = 0.16;
+                    const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
+                    const data = buf.getChannelData(0);
+                    for (let s = 0; s < data.length; s++){
+                        const base = (Math.random()*2 - 1) * 0.12;
+                        const spike = (Math.random() < 0.018) ? (Math.random()*2 - 1) * 1.0 : 0;
+                        data[s] = (base + spike) * Math.pow(1 - s/data.length, 1.2);
+                    }
+                    const n = ctx.createBufferSource();
+                    n.buffer = buf;
+
+                    const hp = ctx.createBiquadFilter();
+                    hp.type = 'highpass';
+                    hp.frequency.setValueAtTime(1700, tt);
+
+                    const bp = ctx.createBiquadFilter();
+                    bp.type = 'bandpass';
+                    bp.frequency.setValueAtTime(3200, tt);
+                    bp.Q.setValueAtTime(0.9, tt);
+
+                    const gn = ctx.createGain();
+                    n.connect(hp);
+                    hp.connect(bp);
+                    bp.connect(gn);
+                    envGain(gn, tt, 0.001, 0.05, 0.0001, 0.10, 0.22 * strength);
+                    gn.connect(master);
+
+                    n.start(tt);
+                    n.stop(tt + dur);
+
+                    // small hiss tail only on last pop
+                    if (i === pops - 1){
+                        const dur2 = 0.36;
+                        const buf2 = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur2), ctx.sampleRate);
+                        const d2 = buf2.getChannelData(0);
+                        for (let s = 0; s < d2.length; s++){
+                            d2[s] = (Math.random()*2 - 1) * 0.25 * Math.pow(1 - s/d2.length, 2.2);
+                        }
+                        const n2 = ctx.createBufferSource();
+                        n2.buffer = buf2;
+
+                        const lp = ctx.createBiquadFilter();
+                        lp.type = 'lowpass';
+                        lp.frequency.setValueAtTime(2600, tt);
+
+                        const g2 = ctx.createGain();
+                        n2.connect(lp);
+                        lp.connect(g2);
+                        envGain(g2, tt + 0.02, 0.004, 0.12, 0.0001, 0.22, 0.14 * strength);
+                        g2.connect(master);
+
+                        n2.start(tt + 0.01);
+                        n2.stop(tt + dur2 + 0.05);
+                    }
+                }
+            }
+
+
+
+            // fireworks: whoosh + boom (one launch)
+            function sfxFirework(delaySec = 0){
+                const ctx = ensureAudio();
+                if (!ctx || !master) return;
+
+                const t0 = ctx.currentTime + 0.006 + Math.max(0, delaySec);
+
+                // WHOOSH (noise through bandpass sweep)
+                const whooshDur = 0.55;
+                const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * whooshDur), ctx.sampleRate);
+                const d = buf.getChannelData(0);
+                for (let i = 0; i < d.length; i++){
+                    d[i] = (Math.random()*2 - 1) * Math.pow(1 - i/d.length, 1.1);
+                }
+                const src = ctx.createBufferSource();
+                src.buffer = buf;
+
+                const bp = ctx.createBiquadFilter();
+                bp.type = 'bandpass';
+                bp.frequency.setValueAtTime(520, t0);
+                bp.frequency.exponentialRampToValueAtTime(1400, t0 + whooshDur);
+                bp.Q.setValueAtTime(0.75, t0);
+
+                const g = ctx.createGain();
+                g.gain.setValueAtTime(0.0001, t0);
+                g.gain.exponentialRampToValueAtTime(0.18, t0 + 0.12);
+                g.gain.exponentialRampToValueAtTime(0.0001, t0 + whooshDur);
+
+                src.connect(bp);
+                bp.connect(g);
+                g.connect(master);
+
+                src.start(t0);
+                src.stop(t0 + whooshDur);
+
+                // BOOM (low oscillator + lowpassed noise) немного позже
+                const boomT = t0 + 0.56 + (Math.random()*0.06);
+                const boomDur = 1.15;
+
+                const o = ctx.createOscillator();
+                o.type = 'triangle';
+                o.frequency.setValueAtTime(95, boomT);
+                o.frequency.exponentialRampToValueAtTime(42, boomT + 0.55);
+
+                const og = ctx.createGain();
+                envGain(og, boomT, 0.006, 0.18, 0.0001, 0.70, 0.55);
+                o.connect(og);
+
+                // noise thump
+                const nbuf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * boomDur), ctx.sampleRate);
+                const nd = nbuf.getChannelData(0);
+                for (let i = 0; i < nd.length; i++){
+                    nd[i] = (Math.random()*2 - 1) * 0.75 * Math.pow(1 - i/nd.length, 1.6);
+                }
+                const nsrc = ctx.createBufferSource();
+                nsrc.buffer = nbuf;
+
+                const lp = ctx.createBiquadFilter();
+                lp.type = 'lowpass';
+                lp.frequency.setValueAtTime(320, boomT);
+
+                const ng = ctx.createGain();
+                envGain(ng, boomT, 0.003, 0.22, 0.0001, 0.85, 0.34);
+
+                // add slight "crackle" top
+                const hp = ctx.createBiquadFilter();
+                hp.type = 'highpass';
+                hp.frequency.setValueAtTime(2400, boomT);
+
+                const cg = ctx.createGain();
+                envGain(cg, boomT + 0.02, 0.002, 0.10, 0.0001, 0.55, 0.12);
+
+                nsrc.connect(lp);
+                lp.connect(ng);
+                ng.connect(master);
+
+                nsrc.connect(hp);
+                hp.connect(cg);
+                cg.connect(master);
+
+                og.connect(master);
+
+                o.start(boomT);
+                o.stop(boomT + boomDur);
+                nsrc.start(boomT);
+                nsrc.stop(boomT + boomDur);
+            }
+
+            function sfxFireworksShow(){
+                // matches canvas show: 3 waves
+                const times = [0.12, 2.28, 4.44];
+                times.forEach((t)=>{
+                    // left/right almost together
+                    sfxFirework(t + (Math.random()*0.04));
+                    sfxFirework(t + 0.06 + (Math.random()*0.05));
+                });
+            }
+
+            function sfxWind(ms=6000){
+                const ctx = ensureAudio();
+                if (!ctx || !master) return;
+
+                const t0 = ctx.currentTime + 0.005;
+                const dur = Math.max(0.4, ms/1000);
+
+                const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate*dur), ctx.sampleRate);
+                const data = buf.getChannelData(0);
+                for (let i = 0; i < data.length; i++){
+                    // pink-ish noise approximation
+                    data[i] = (Math.random()*2 - 1) * 0.65;
+                }
+                const src = ctx.createBufferSource();
+                src.buffer = buf;
+                src.loop = false;
+
+                const bp = ctx.createBiquadFilter();
+                bp.type = 'bandpass';
+                bp.frequency.setValueAtTime(420, t0);
+                bp.Q.setValueAtTime(0.8, t0);
+
+                const lp = ctx.createBiquadFilter();
+                lp.type = 'lowpass';
+                lp.frequency.setValueAtTime(1400, t0);
+
+                const g = ctx.createGain();
+                g.gain.setValueAtTime(0.0001, t0);
+
+                // slow amplitude wobble
+                const lfo = ctx.createOscillator();
+                lfo.type = 'sine';
+                lfo.frequency.setValueAtTime(0.35, t0);
+                const lfoG = ctx.createGain();
+                lfoG.gain.setValueAtTime(0.18, t0);
+                lfo.connect(lfoG);
+                lfoG.connect(g.gain);
+
+                src.connect(bp);
+                bp.connect(lp);
+                lp.connect(g);
+                g.connect(master);
+
+                // envelope: fade in then fade out
+                g.gain.exponentialRampToValueAtTime(0.42, t0 + 0.35);
+                g.gain.exponentialRampToValueAtTime(0.22, t0 + Math.max(0.9, dur - 1.2));
+                g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+                lfo.start(t0);
+                src.start(t0);
+                src.stop(t0 + dur);
+                lfo.stop(t0 + dur);
+            }
+
+            updateSoundBtn();
+            // unlock audio on first gesture
+            window.addEventListener('pointerdown', ensureAudio, { once: true, passive: true });
+            window.addEventListener('keydown', ensureAudio, { once: true });
+
+            if (soundBtn){
+                soundBtn.addEventListener('click', ()=>{
+                    sfxEnabled = !sfxEnabled;
+                    localStorage.setItem('sfxEnabled', sfxEnabled ? '1' : '0');
+                    updateSoundBtn();
+                    if (sfxEnabled) ensureAudio();
+                });
+            }
+
+
+            const palette = [
+                ['rgba(120,180,255,.96)','rgba(120,180,255,.55)'],
+                ['rgba(120,255,190,.96)','rgba(120,255,190,.50)'],
+                ['rgba(255,220,120,.96)','rgba(255,220,120,.55)'],
+                ['rgba(255,140,200,.96)','rgba(255,140,200,.55)'],
+                ['rgba(180,120,255,.96)','rgba(180,120,255,.55)'],
+                ['rgba(255,160,120,.96)','rgba(255,160,120,.50)'],
+            ];
+            const rand = (a,b)=> a + Math.random()*(b-a);
+
+            function showToast(text){
+                if (!toast) return;
+                toast.textContent = text;
+                toast.classList.remove('show');
+                void toast.offsetWidth;
+                toast.classList.add('show');
+            }
+
+            function partyOn(ms=1900){
+                document.body.classList.add('party');
+                if (treeGarland) treeGarland.classList.add('tg-fast');
+                if (aurora){
+                    aurora.classList.remove('on');
+                    void aurora.offsetWidth;
+                    aurora.classList.add('on');
+                }
+
+                // speed-up top garland bulbs by forcing shorter duration for a moment
+                if (topGarland){
+                    topGarland.querySelectorAll('.g-bulbPulse').forEach((el)=>{
+                        if (!el.dataset.dur) el.dataset.dur = getComputedStyle(el).animationDuration;
+                        el.style.animationDuration = (0.85 + Math.random()*0.45).toFixed(2) + 's';
+                    });
+                }
+
+                setTimeout(()=>{
+                    document.body.classList.remove('party');
+                    if (treeGarland) treeGarland.classList.remove('tg-fast');
+                    if (topGarland){
+                        topGarland.querySelectorAll('.g-bulbPulse').forEach((el)=>{
+                            el.style.animationDuration = '';
+                        });
+                    }
+                }, ms);
+            }
+
+            function shuffleTreeLights(){
+                const bulbs = document.querySelectorAll('.tree-garland .tg-bulb');
+                if (!bulbs.length) return;
+                bulbs.forEach((b)=>{
+                    const c = palette[(Math.random()*palette.length)|0];
+                    b.style.setProperty('--fill', c[0]);
+                    b.style.setProperty('--glow', c[1]);
+                    b.style.setProperty('--delay', (-rand(0,1.2)).toFixed(2) + 's');
+                });
+            }
+
+            function sparkleStar(){
+                if (!star) return;
+                star.classList.remove('sparkle');
+                void star.offsetWidth;
+                star.classList.add('sparkle');
+
+                const r = star.getBoundingClientRect();
+                const x = r.left + r.width*0.5;
+                const y = r.top + r.height*0.35;
+                if (window.__fxStarburst) window.__fxStarburst(x, y, 34);
+            }
+
+            document.addEventListener('daychange', (e) => {
+                if (reduce) return;
+
+                const DUR = 6000;
+
+                // 1) card pulse
+                if (card){
+                    card.classList.remove('day-pulse');
+                    void card.offsetWidth;
+                    card.classList.add('day-pulse');
+                }
+
+                // 2) toast
+                showToast(`✨ Новый день! Осталось: ${e.detail.days} дн.`);
+
+                // 3) big confetti burst near card top
+                const doBurst = (count=120)=>{
+                    if (!window.__fxBurst) return;
+                    if (card){
+                        const r = card.getBoundingClientRect();
+                        window.__fxBurst(r.left + r.width/2, r.top + Math.min(120, r.height*0.22), count);
+                    } else {
+                        window.__fxBurst(window.innerWidth/2, 180, count);
+                    }
+                };
+                doBurst(140);
+                // 3 waves of fireworks from left & right
+                if (window.__fxFireworksShow) window.__fxFireworksShow(DUR);
+                try { sfxFireworksShow(); } catch(_){ }
+
+                try { sfxPoppers(1.0); } catch(_){}
+
+                // 4) garlands + aurora + star
+                partyOn(DUR);
+                shuffleTreeLights();
+                sparkleStar();
+
+                // retrigger aurora a couple of times for a longer show
+                const retriggerAurora = ()=>{
+                    if (!aurora) return;
+                    aurora.classList.remove('on');
+                    void aurora.offsetWidth;
+                    aurora.classList.add('on');
+                };
+                setTimeout(retriggerAurora, 2600);
+                setTimeout(retriggerAurora, 5200);
+
+                // 5) snow gust + extra flakes (6 seconds)
+                if (window.__snowGust) window.__snowGust(DUR, 1.35);
+                if (window.__snowBurst) window.__snowBurst(240);
+
+                // 6) sounds (require first user gesture, can be muted)
+                try {
+                    sfxChime();
+                    sfxPop();
+                    sfxPoppers(1.0);
+                    sfxWind(DUR);
+                } catch(_){}
+
+                // extra mini-bursts during the 6s window
+                [1400, 2800, 4200, 5600].forEach((t, i)=>{
+                    setTimeout(()=>{
+                        shuffleTreeLights();
+                        sparkleStar();
+                        if (window.__snowBurst) window.__snowBurst(90);
+                        doBurst(60);
+                        if (Math.random() < 0.55 && window.__fxLaunchFirework) window.__fxLaunchFirework(Math.random() < 0.5 ? 'left' : 'right');
+                        if (Math.random() < 0.35) { try { sfxFirework(0.0); } catch(_){ } }
+
+                        if (i % 2 === 0) { try { sfxPoppers(0.85); } catch(_){} } else { try { sfxPop(); } catch(_){} }
+                    }, t);
+                });
+            });
+})();
+
     </script>
+    <div id="toast" class="toast" aria-live="polite"></div>
 </body>
 </html>
